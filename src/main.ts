@@ -33,7 +33,7 @@ async function bootstrap() {
     preflightContinue: false,
     optionsSuccessStatus: 204,
     credentials: true,
-    origin: [/http\:\/\/localhost\:\d{1,5}$/, /https?:\/\/(?:[^\/]+\.)*argenpesos\.com\.ar$/],
+    origin: [/http\:\/\/localhost\:\d{1,5}$/, /https?:\/\/(?:[^\/]+\.)*argenpesos\.com\.ar$/, 'https://argenpesos.maylandlabs.com'],
   });
   app.setGlobalPrefix('api');
 
@@ -45,6 +45,6 @@ async function bootstrap() {
   await loadData.loadDataByDefault();
   app.useWebSocketAdapter(new IoAdapter(app));
 
-  await app.listen(5500);
+  await app.listen(8001);
 }
 bootstrap();

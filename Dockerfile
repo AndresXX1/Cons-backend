@@ -11,6 +11,6 @@ COPY . .
 
 RUN npm run build
 
-EXPOSE 5500
+EXPOSE 8001
 
 CMD ["npm", "run", "start:proddocker"]
