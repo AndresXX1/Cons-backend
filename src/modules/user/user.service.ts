@@ -1,10 +1,8 @@
 import * as bcrypt from 'bcrypt';
 import { Not, Repository } from 'typeorm';
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User, UserRoleType } from '@models/User.entity';
-import { EditProfileDto } from './dto/edit-profile.dto';
-import { CompleteProfileDto } from './dto/complete-profile.dto';
+import { User } from '@models/User.entity';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 
@@ -27,7 +25,6 @@ export class UserService {
     const newUser = new User();
     newUser.email = user.email as string;
     newUser.password = hashedPassword;
-    newUser.role = UserRoleType.ADMIN;
     newUser.email_code = user.email_code as string;
     newUser.email_verified = user.email_verified as boolean;
     const savedUser = await this.userRepository.save(newUser);
@@ -46,7 +43,6 @@ export class UserService {
     const user = new User();
     user.email = email;
     user.password = hashedPassword;
-    user.role = UserRoleType.USER;
     user.email_code = emailVerificationCode;
     //user.email_code_create_at = Date.now()
     const savedUser = await this.userRepository.save(user);
@@ -111,7 +107,6 @@ export class UserService {
   async findById(userId: number): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['followers', 'following', 'reviewsReceived', 'matches_winned', 'matches_losses'],
     });
     if (!user) {
       throw new NotFoundException('El usuario no existe.');
@@ -154,30 +149,6 @@ export class UserService {
 
   async updateLastLogin(user: User): Promise<User> {
     user.last_login = new Date();
-    return this.userRepository.save(user);
-  }
-
-  async editProfile(userId: number, editProfileDto: EditProfileDto) {
-    const user = await this.findById(userId);
-    if (!user) throw new BadRequestException('User not found');
-    // if (user.first_name) user.first_name = editProfileDto.first_name;
-    // if (user.first_name) user.last_name = editProfileDto.last_name;
-    // if (editProfileDto.phone) user.phone = editProfileDto.phone;
-    // if (editProfileDto.genre) user.genre = editProfileDto.genre;
-    // if (editProfileDto.date) user.date = new Date(editProfileDto.date);
-    // if (editProfileDto.completed_welcome_form) user.completed_welcome_form = editProfileDto.completed_welcome_form;
-    // if (editProfileDto.points) user.points = editProfileDto.points;
-    // if (editProfileDto.federate) user.federate = editProfileDto.federate;
-    await this.userRepository.update(userId, editProfileDto);
-  }
-
-  async completeProfile(userId: number, completeProfileDto: CompleteProfileDto): Promise<User> {
-    const user = await this.findById(userId);
-    user.first_name = completeProfileDto.first_name;
-    user.last_name = completeProfileDto.last_name;
-    user.phone = completeProfileDto.phone;
-    user.date = completeProfileDto.date;
-    user.completed_profile = true;
     return this.userRepository.save(user);
   }
 

@@ -18,8 +18,6 @@ export class DataService {
         first_name: 'Carlos',
         email_verified: true,
         email_code: '12345',
-        federate: 'Amateur',
-        points: Number((Math.random() * 1000).toFixed(0)),
       },
       {
         email: 'joseleonardoagreda@gmail.com',
@@ -27,8 +25,6 @@ export class DataService {
         first_name: 'Leonardo',
         email_verified: true,
         email_code: '12345',
-        federate: 'Amateur',
-        points: Number((Math.random() * 1000).toFixed(0)),
       },
       {
         email: 'garciadelriotomas@gmail.com',
@@ -36,8 +32,6 @@ export class DataService {
         first_name: 'Tomas',
         email_verified: true,
         email_code: '12345',
-        federate: 'Amateur',
-        points: Number((Math.random() * 1000).toFixed(0)),
       },
       {
         email: 'jfdirazar@gmail.com',
@@ -45,8 +39,6 @@ export class DataService {
         first_name: 'Jose',
         email_verified: true,
         email_code: '12345',
-        federate: 'Amateur',
-        points: Number((Math.random() * 1000).toFixed(0)),
       },
       {
         email: 'alexisfajian@gmail.com',
@@ -54,8 +46,6 @@ export class DataService {
         first_name: 'Alexis',
         email_verified: true,
         email_code: '12345',
-        federate: 'Amateur',
-        points: Number((Math.random() * 1000).toFixed(0)),
       },
       {
         email: 'carreirafranco@gmail.com',
@@ -63,8 +53,6 @@ export class DataService {
         password: '123456',
         email_verified: true,
         email_code: '12345',
-        federate: 'Amateur',
-        points: Number((Math.random() * 1000).toFixed(0)),
       },
       {
         email: 'Douglasgrl27@gmail.com',
@@ -72,8 +60,6 @@ export class DataService {
         password: '123456',
         email_verified: true,
         email_code: '12345',
-        federate: 'Federado',
-        points: Number((Math.random() * 1000).toFixed(0)),
       },
       {
         email: 'hofmateo@gmail.com',
@@ -81,8 +67,6 @@ export class DataService {
         password: '123456',
         email_verified: true,
         email_code: '12345',
-        federate: 'Federado',
-        points: Number((Math.random() * 1000).toFixed(0)),
       },
       {
         email: 'santiagoenriquejordan@gmail.com',
@@ -90,8 +74,6 @@ export class DataService {
         password: '123456',
         email_verified: true,
         email_code: '12345',
-        federate: 'Federado',
-        points: Number((Math.random() * 1000).toFixed(0)),
       },
     ];
     for (const user of defaultUsers) {
@@ -125,6 +107,12 @@ export class DataService {
       },
       {
         email: 'alexisfajian@gmail.com',
+        password: '123456',
+        email_verified: true,
+        email_code: '12345',
+      },
+      {
+        email: 'Douglasgrl27@gmail.com',
         password: '123456',
         email_verified: true,
         email_code: '12345',
