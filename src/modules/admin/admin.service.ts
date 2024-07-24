@@ -3,15 +3,20 @@ import { LogInDto } from './dto/log-in.dto';
 import { Admin } from '@models/Admin.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { JwtService, TokenExpiredError } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { SessionAdmin } from '@models/SessionAdmin.entity';
 import * as DeviceDetector from 'device-detector-js';
 import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 class AccessRefreshTokenAdminGenerated {
   sessionAdmin: SessionAdmin;
   refreshToken: string;
+}
+export class validatedSession {
+  user: Admin;
+  sessionId: number;
 }
 
 @Injectable()
@@ -132,5 +137,114 @@ export class AdminService {
     newAdmin.email_code = user.email_code as string;
     const savedAdmin = await this.adminRepository.save(newAdmin);
     return savedAdmin;
+  }
+
+  async refreshToken(refreshTokenDto: RefreshTokenDto): Promise<string> {
+    const refreshTokenData = await this.validateAccessRefreshToken(refreshTokenDto.refresh_token);
+
+    if (!refreshTokenData) {
+      throw new UnauthorizedException({
+        message: 'Refresh token no valido',
+      });
+    }
+
+    const session = await this.sessionAdminfindById(refreshTokenData.sessionId);
+
+    if (!session) {
+      throw new UnauthorizedException({
+        message: 'Unauthorized',
+      });
+    }
+
+    const payload = {
+      userId: refreshTokenData.userId,
+      sessionId: refreshTokenData.sessionId,
+    };
+
+    const accessToken = this.jwtService.sign(payload, {
+      secret: this.configService.get<string>('session.secretKey'),
+      expiresIn: this.configService.get<string>('session.jwtTokenExpiration'),
+    });
+
+    return accessToken;
+  }
+
+  async validateAccessRefreshToken(refreshToken) {
+    try {
+      const data = this.jwtService.verify(refreshToken, {
+        secret: this.configService.get<string>('session.secretKeyRefresh'),
+      });
+
+      return data;
+    } catch (e) {
+      if (e instanceof TokenExpiredError) {
+        throw new UnauthorizedException('El refresh token ha caducado');
+      }
+    }
+  }
+
+  async sessionAdminfindById(sessionId): Promise<SessionAdmin | null> {
+    return this.sessionAdminRepository.findOne({
+      where: { id: sessionId },
+    });
+  }
+
+  async validateSession(accessToken: string): Promise<validatedSession> {
+    if (!accessToken) {
+      throw new UnauthorizedException({
+        message: 'Token no valido',
+      });
+    }
+
+    const accessTokenData = await this.validateAccessToken(accessToken);
+
+    if (!accessTokenData) {
+      throw new UnauthorizedException({
+        message: 'Token no valido',
+      });
+    }
+
+    const session = await this.sessionAdminfindByIds(accessTokenData.userId, accessTokenData.sessionId);
+
+    if (!session) {
+      throw new UnauthorizedException({
+        message: 'Unauthorized',
+      });
+    }
+
+    const admin = await this.adminDFindById(accessTokenData.userId);
+
+    return { user: admin, sessionId: accessTokenData.sessionId };
+  }
+
+  async adminDFindById(userId: number): Promise<Admin> {
+    const admin = await this.adminRepository.findOne({
+      where: { id: userId },
+    });
+    if (!admin) {
+      throw new NotFoundException('El usuario no existe.');
+    }
+    return admin;
+  }
+
+  async sessionAdminfindByIds(userId, sessionId): Promise<SessionAdmin | null> {
+    return this.sessionAdminRepository.findOne({
+      where: { id: sessionId, admin: { id: userId } },
+    });
+  }
+
+  async validateAccessToken(accessToken) {
+    try {
+      const data = this.jwtService.verify(accessToken, {
+        secret: this.configService.get<string>('session.secretKey'),
+      });
+
+      return data;
+    } catch (e) {
+      if (e instanceof TokenExpiredError) {
+        throw new UnauthorizedException('El token ha caducado');
+      }
+      return null;
+    }
   }
 }

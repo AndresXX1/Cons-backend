@@ -11,6 +11,7 @@ import { Session } from '@models/Session.entity';
 import { UserController } from './user.controller';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { AdminModule } from '@modules/admin/admin.module';
 
 @Module({
   providers: [UserService, AuthService, JwtService, SessionService],
@@ -51,6 +52,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
       }),
     }),
     forwardRef(() => AuthModule),
+    forwardRef(() => AdminModule),
   ],
   exports: [UserService],
 })

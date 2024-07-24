@@ -3,6 +3,7 @@ import { ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AdminService } from './admin.service';
 import { Public } from '@infrastructure/decorators/public-route.decorator';
 import { LogInDto } from './dto/log-in.dto';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Controller('admin')
 @ApiTags('admin')
@@ -19,5 +20,14 @@ export class AdminController {
   ) {
     const userResponse = await this.adminService.logIn(request, logInDto);
     return userResponse;
+  }
+
+  @Public()
+  @ApiBody({ type: RefreshTokenDto })
+  @ApiOperation({ summary: 'Refresca el token' })
+  @Post('/refresh-token')
+  async refreshToken(@Body() refreshTokenDto: RefreshTokenDto) {
+    const token = await this.adminService.refreshToken(refreshTokenDto);
+    return { ok: true, token };
   }
 }
