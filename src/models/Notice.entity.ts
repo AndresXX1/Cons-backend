@@ -15,6 +15,6 @@ export class Notice extends BaseEntity {
   @Column({ type: 'varchar', nullable: true })
   description: string;
 
-  @Column({ type: 'timestamp', nullable: true })
-  date: Date;
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  date: string;
 }
