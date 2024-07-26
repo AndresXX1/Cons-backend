@@ -11,6 +11,8 @@ import { UserModule } from '@modules/user/user.module';
 import { AuthModule } from '@modules/auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminModule } from '@modules/admin/admin.module';
+import { BannerModule } from '@modules/banner/banner.module';
+import { NoticeModule } from '@modules/notice/notice.module';
 
 @Module({
   imports: [
@@ -22,6 +24,14 @@ import { AdminModule } from '@modules/admin/admin.module';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'uploads', 'assets'),
       serveRoot: '/assets',
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'uploads', 'banner'),
+      serveRoot: '/banner',
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'uploads', 'notice'),
+      serveRoot: '/notice',
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -41,6 +51,8 @@ import { AdminModule } from '@modules/admin/admin.module';
     UserModule,
     AuthModule,
     AdminModule,
+    BannerModule,
+    NoticeModule,
   ],
   controllers: [AppController],
   providers: [AppService, DataService],
