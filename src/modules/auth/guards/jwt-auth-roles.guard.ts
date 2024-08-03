@@ -1,6 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { AdminService } from '../../admin/admin.service';
 import { Reflector } from '@nestjs/core';
+import { META_ROLES } from '@infrastructure/constants';
 
 @Injectable()
 export class JwtAuthRolesGuard implements CanActivate {
@@ -10,6 +11,10 @@ export class JwtAuthRolesGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    const allowedRoles = this.reflector.get<string[]>(META_ROLES, context.getHandler());
+    if (!allowedRoles) {
+      return true; // Si no hay roles especificados, permitir el acceso
+    }
     try {
       const request = context.switchToHttp().getRequest();
       const { authorization }: any = request.headers;
@@ -20,6 +25,9 @@ export class JwtAuthRolesGuard implements CanActivate {
       const { user, sessionId } = await this.adminService.validateSession(accessToken);
       request.user = user;
       request.sessionId = sessionId;
+      if (!allowedRoles.includes(user.role)) {
+        throw new ForbiddenException('You do not have permission to access this resource');
+      }
       return true;
     } catch (error) {
       throw new ForbiddenException(error.message || 'session expired! Please sign In');

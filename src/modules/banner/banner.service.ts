@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as DeviceDetector from 'device-detector-js';
-import { Banner } from '@models/Banner.entity';
+import { Banner, BannerType } from '@models/Banner.entity';
 
 @Injectable()
 export class BannerService {
@@ -14,16 +14,19 @@ export class BannerService {
     private readonly bannerRepository: Repository<Banner>,
   ) {}
 
-  async getBanners(): Promise<Banner[]> {
-    const banners = await this.bannerRepository.find({});
+  async getAllBannersForType(type: BannerType): Promise<Banner[]> {
+    const banners = await this.bannerRepository.find({
+      where: { type },
+    });
     const bannerNotDeleted = banners.filter((banner) => !banner.deleted);
     return bannerNotDeleted;
   }
 
-  async create(bannerName: string): Promise<Banner> {
+  async create(bannerName: string, type: BannerType): Promise<Banner> {
     const banner = new Banner();
     banner.url = bannerName;
     banner.deleted = false;
+    banner.type = type;
 
     await this.bannerRepository.save(banner);
     return banner;

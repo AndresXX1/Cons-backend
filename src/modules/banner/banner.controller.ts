@@ -6,6 +6,7 @@ import { Roles } from '@infrastructure/decorators/role-protected.decorator';
 import { JwtAuthRolesGuard } from '@modules/auth/guards/jwt-auth-roles.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
+import { BannerType } from '@models/Banner.entity';
 
 const allowedFileExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
 
@@ -14,16 +15,28 @@ const allowedFileExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
 export class BannerController {
   constructor(private readonly bannerService: BannerService) {}
 
-  @ApiOperation({ summary: 'Obtiene lista de banners' })
-  @Get('')
-  async getBanners() {
-    const result = await this.bannerService.getBanners();
+  @ApiOperation({ summary: 'Obtiene lista de banners de home' })
+  @Get('home')
+  async getAllBannersHome() {
+    const result = await this.bannerService.getAllBannersForType(BannerType.HOME);
+    return { ok: true, banners: result };
+  }
+
+  @Get('cuponizate')
+  async getAllBannersHomeCuponizate() {
+    const result = await this.bannerService.getAllBannersForType(BannerType.CUPONIZATE);
+    return { ok: true, banners: result };
+  }
+
+  @Get('argencompras')
+  async getAllBannersHomeArgenCompras() {
+    const result = await this.bannerService.getAllBannersForType(BannerType.ARGEN_COMPRAS);
     return { ok: true, banners: result };
   }
 
   @UseGuards(JwtAuthRolesGuard)
   @Roles('admin')
-  @Post('')
+  @Post(':type')
   @ApiOperation({ summary: 'Crear banner solo admin' })
   @UseInterceptors(
     FileInterceptor('file', {
@@ -47,10 +60,11 @@ export class BannerController {
   async uploadFile(
     @UploadedFile()
     file: Express.Multer.File,
+    @Param('type') type: string,
   ) {
     if (!file) throw new HttpException('a file is required', HttpStatus.BAD_REQUEST);
     const bannerName = file.filename;
-    const bannerSaved = await this.bannerService.create(bannerName);
+    const bannerSaved = await this.bannerService.create(bannerName, type as BannerType);
 
     return { ok: true, banner: bannerSaved };
   }
