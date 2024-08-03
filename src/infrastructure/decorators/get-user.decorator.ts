@@ -5,3 +5,9 @@ export const GetUser = createParamDecorator((_data, ctx: ExecutionContext): stri
   const user = req.user;
   return user;
 });
+
+export const GetAdmin = createParamDecorator((_data, ctx: ExecutionContext): string => {
+  const req = ctx.switchToHttp().getRequest();
+  const user = req.user;
+  return user;
+});

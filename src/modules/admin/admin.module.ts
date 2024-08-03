@@ -6,6 +6,7 @@ import { AdminService } from './admin.service';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { SessionAdmin } from '@models/SessionAdmin.entity';
+import { EmailService } from './email.service';
 
 @Module({
   imports: [
@@ -20,8 +21,8 @@ import { SessionAdmin } from '@models/SessionAdmin.entity';
     }),
     TypeOrmModule.forFeature([Admin, SessionAdmin]),
   ],
-  providers: [AdminService, JwtService, ConfigService],
+  providers: [AdminService, JwtService, ConfigService, EmailService],
   controllers: [AdminController],
-  exports: [AdminService],
+  exports: [AdminService, EmailService],
 })
 export class AdminModule {}

@@ -13,6 +13,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminModule } from '@modules/admin/admin.module';
 import { BannerModule } from '@modules/banner/banner.module';
 import { NoticeModule } from '@modules/notice/notice.module';
+import { ProductModule } from '@modules/product/product.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { NoticeModule } from '@modules/notice/notice.module';
     AdminModule,
     BannerModule,
     NoticeModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService, DataService],

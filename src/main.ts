@@ -9,6 +9,7 @@ import { IoAdapter } from '@nestjs/platform-socket.io';
 import { winstonLogger } from '@infrastructure/loggers/winston.logger';
 import { DataService } from './scripts/DataService';
 import { HttpExceptionFilter } from '@infrastructure/filters/global-exception.filter';
+import { ProductService } from '@modules/product/product.service';
 
 export const logger = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'production' ? winstonLogger : new Logger('argenpesos-backend');
 
@@ -44,6 +45,12 @@ async function bootstrap() {
   const loadData = app.get(DataService);
   await loadData.loadDataByDefault();
   app.useWebSocketAdapter(new IoAdapter(app));
+
+  const productService = app.get(ProductService);
+
+  setInterval(async () => {
+    await productService.updateProducts();
+  }, 10000);
 
   await app.listen(8001);
 }

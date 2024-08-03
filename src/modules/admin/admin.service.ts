@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { LogInDto } from './dto/log-in.dto';
-import { Admin } from '@models/Admin.entity';
+import { Admin, RoleAdminType } from '@models/Admin.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { JwtService, TokenExpiredError } from '@nestjs/jwt';
@@ -9,6 +9,8 @@ import { SessionAdmin } from '@models/SessionAdmin.entity';
 import * as DeviceDetector from 'device-detector-js';
 import { ConfigService } from '@nestjs/config';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
+import { CreateAdminDto } from './dto/create-admin.dto';
+import { EmailService } from './email.service';
 
 class AccessRefreshTokenAdminGenerated {
   sessionAdmin: SessionAdmin;
@@ -31,6 +33,7 @@ export class AdminService {
     private readonly sessionAdminRepository: Repository<SessionAdmin>,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
+    private readonly emailService: EmailService,
   ) {}
 
   extractIpAddress(fullIpAddress: string): string {
@@ -246,5 +249,44 @@ export class AdminService {
       }
       return null;
     }
+  }
+
+  async getAdmins(): Promise<Admin[]> {
+    return await this.adminRepository.find();
+  }
+
+  async deleteAdmin(adminId: number): Promise<Admin> {
+    const admin = await this.adminRepository.findOne({
+      where: { id: adminId },
+    });
+    if (!admin) {
+      throw new NotFoundException('El admin no existe.');
+    }
+    if (admin.role === RoleAdminType.SUPER_ADMIN) {
+      throw new UnauthorizedException('No puedes eliminar un super admin.');
+    }
+    return await this.adminRepository.remove(admin);
+  }
+
+  async createAdminFetch(createAdminDto: CreateAdminDto): Promise<Admin> {
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(createAdminDto.password, salt);
+
+    const searchAdmin = await this.adminRepository.findOne({ where: { email: createAdminDto.email } });
+
+    if (searchAdmin) {
+      throw new UnauthorizedException('El email ya está registrado.');
+    }
+    const newAdmin = new Admin();
+    newAdmin.email = createAdminDto.email as string;
+    newAdmin.password = hashedPassword;
+    newAdmin.full_name = createAdminDto.full_name as string;
+    newAdmin.avatar = createAdminDto.avatar ? createAdminDto.avatar : 'default-user-avatar.png';
+    newAdmin.role = RoleAdminType.ADMIN;
+    newAdmin.email_code = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const savedAdmin = await this.adminRepository.save(newAdmin);
+
+    await this.emailService.sendPasswordAdmin(savedAdmin.full_name, savedAdmin.email, createAdminDto.password);
+    return savedAdmin;
   }
 }
