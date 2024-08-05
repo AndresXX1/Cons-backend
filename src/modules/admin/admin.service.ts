@@ -138,6 +138,7 @@ export class AdminService {
     newAdmin.email = user.email as string;
     newAdmin.password = hashedPassword;
     newAdmin.email_code = user.email_code as string;
+    newAdmin.role = RoleAdminType.SUPER_ADMIN;
     const savedAdmin = await this.adminRepository.save(newAdmin);
     return savedAdmin;
   }
