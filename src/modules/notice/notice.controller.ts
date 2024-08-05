@@ -1,12 +1,27 @@
-import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, UnsupportedMediaTypeException, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  SetMetadata,
+  UnsupportedMediaTypeException,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { NoticeService } from './notice.service';
 import { CreateNoticeDto } from './dto/create-notice.dto';
 import { JwtAuthRolesGuard } from '@modules/auth/guards/jwt-auth-roles.guard';
-import { Roles } from '@infrastructure/decorators/role-protected.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as uuid from 'uuid';
+import { META_ROLES } from '@infrastructure/constants';
+import { RoleAdminType } from '@models/Admin.entity';
 
 const allowedFileExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
 
@@ -17,13 +32,13 @@ export class NoticeController {
 
   @ApiOperation({ summary: 'Obtiene lista de noticias' })
   @Get('')
-  async getBanners() {
+  async getNotices() {
     const result = await this.noticeService.getNotices();
     return { ok: true, notices: result };
   }
 
   @UseGuards(JwtAuthRolesGuard)
-  @Roles('admin')
+  @SetMetadata(META_ROLES, [RoleAdminType.ADMIN, RoleAdminType.SUPER_ADMIN])
   @Post('/image')
   @ApiOperation({ summary: 'subir imagen de noticia, solo admin' })
   @UseInterceptors(
@@ -55,7 +70,7 @@ export class NoticeController {
   }
 
   @UseGuards(JwtAuthRolesGuard)
-  @Roles('admin')
+  @SetMetadata(META_ROLES, [RoleAdminType.ADMIN, RoleAdminType.SUPER_ADMIN])
   @ApiOperation({
     summary: 'Crear noticia, solo admin',
   })
@@ -66,7 +81,7 @@ export class NoticeController {
   }
 
   @UseGuards(JwtAuthRolesGuard)
-  @Roles('admin')
+  @SetMetadata(META_ROLES, [RoleAdminType.ADMIN, RoleAdminType.SUPER_ADMIN])
   @Delete(':id')
   async deleteBanner(@Param('id') id: string) {
     const noticeId = parseInt(`${id}`, 10);
