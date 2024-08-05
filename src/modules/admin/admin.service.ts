@@ -289,4 +289,46 @@ export class AdminService {
     await this.emailService.sendPasswordAdmin(savedAdmin.full_name, savedAdmin.email, createAdminDto.password);
     return savedAdmin;
   }
+
+  async updateAvatar(userId: number, avatar: string): Promise<Admin> {
+    const admin = await this.adminRepository.findOne({ where: { id: userId } });
+    if (!admin) {
+      throw new NotFoundException('El usuario no existe.');
+    }
+    admin.avatar = avatar;
+    return this.adminRepository.save(admin);
+  }
+
+  async deleteAvatar(userId: number): Promise<Admin> {
+    const admin = await this.adminRepository.findOne({ where: { id: userId } });
+    if (!admin) {
+      throw new NotFoundException('El usuario no existe.');
+    }
+    admin.avatar = 'default-user-avatar.png';
+    return this.adminRepository.save(admin);
+  }
+
+  async updateFullName(userId: number, fullName: string): Promise<Admin> {
+    const admin = await this.adminRepository.findOne({ where: { id: userId } });
+    if (!admin) {
+      throw new NotFoundException('El usuario no existe.');
+    }
+    admin.full_name = fullName;
+    return this.adminRepository.save(admin);
+  }
+
+  async updatePassword(userId: number, password: string, newPassword: string): Promise<Admin> {
+    const admin = await this.adminRepository.findOne({ where: { id: userId } });
+    if (!admin) {
+      throw new NotFoundException('El usuario no existe.');
+    }
+    const adminPassword = await this.findByEmailWithPassword(admin.email);
+    if (!bcrypt.compareSync(password, adminPassword)) {
+      throw new UnauthorizedException('Contraseña no válida.');
+    }
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    admin.password = hashedPassword;
+    return this.adminRepository.save(admin);
+  }
 }
