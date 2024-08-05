@@ -25,7 +25,7 @@ export default (): any => ({
     expiresIn: process.env.FORGET_PASSWORD_TOKEN,
   },
   shop: {
-    shopId: process.env.SHOP_CLOUD_ID,
-    clientSecret: process.env.SHOP_CLOUD_CLIENT_SECRET,
+    // shopId: process.env.SHOP_CLOUD_ID,
+    // clientSecret: process.env.SHOP_CLOUD_CLIENT_SECRET,
   },
 });
