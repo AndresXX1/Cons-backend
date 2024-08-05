@@ -1,12 +1,26 @@
-import { Controller, Delete, Get, HttpException, HttpStatus, Param, Post, UnsupportedMediaTypeException, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  SetMetadata,
+  UnsupportedMediaTypeException,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BannerService } from './banner.service';
 import * as uuid from 'uuid';
-import { Roles } from '@infrastructure/decorators/role-protected.decorator';
 import { JwtAuthRolesGuard } from '@modules/auth/guards/jwt-auth-roles.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { BannerType } from '@models/Banner.entity';
+import { META_ROLES } from '@infrastructure/constants';
+import { RoleAdminType } from '@models/Admin.entity';
 
 const allowedFileExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
 
@@ -37,7 +51,7 @@ export class BannerController {
   }
 
   @UseGuards(JwtAuthRolesGuard)
-  @Roles('admin')
+  @SetMetadata(META_ROLES, [RoleAdminType.ADMIN, RoleAdminType.SUPER_ADMIN])
   @Post(':type')
   @ApiOperation({ summary: 'Crear banner solo admin' })
   @UseInterceptors(
@@ -72,7 +86,7 @@ export class BannerController {
   }
 
   @UseGuards(JwtAuthRolesGuard)
-  @Roles('admin')
+  @SetMetadata(META_ROLES, [RoleAdminType.ADMIN, RoleAdminType.SUPER_ADMIN])
   @Delete(':id')
   async deleteBanner(@Param('id') id: string) {
     const bannerId = parseInt(`${id}`, 10);
