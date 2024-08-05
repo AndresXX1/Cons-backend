@@ -46,11 +46,11 @@ async function bootstrap() {
   await loadData.loadDataByDefault();
   app.useWebSocketAdapter(new IoAdapter(app));
 
-  const productService = app.get(ProductService);
+  // const productService = app.get(ProductService);
 
-  setInterval(async () => {
-    await productService.updateProducts();
-  }, 10000);
+  // setInterval(async () => {
+  //   await productService.updateProducts();
+  // }, 10000);
 
   await app.listen(8001);
 }

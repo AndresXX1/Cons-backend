@@ -22,12 +22,14 @@ export class BannerController {
     return { ok: true, banners: result };
   }
 
+  @ApiOperation({ summary: 'Obtiene lista de banners de cuponizate' })
   @Get('cuponizate')
   async getAllBannersHomeCuponizate() {
     const result = await this.bannerService.getAllBannersForType(BannerType.CUPONIZATE);
     return { ok: true, banners: result };
   }
 
+  @ApiOperation({ summary: 'Obtiene lista de banners de argencompras' })
   @Get('argencompras')
   async getAllBannersHomeArgenCompras() {
     const result = await this.bannerService.getAllBannersForType(BannerType.ARGEN_COMPRAS);
