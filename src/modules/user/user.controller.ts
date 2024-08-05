@@ -1,15 +1,30 @@
-import { Body, Controller, Get, Put, UploadedFile, UseInterceptors, UseGuards, HttpException, HttpStatus, UnsupportedMediaTypeException, Post, Param } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Put,
+  UploadedFile,
+  UseInterceptors,
+  UseGuards,
+  HttpException,
+  HttpStatus,
+  UnsupportedMediaTypeException,
+  Post,
+  Param,
+  SetMetadata,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import * as uuid from 'uuid';
 import { UserService } from './user.service';
 import { GetUser } from '@infrastructure/decorators/get-user.decorator';
-import { Roles } from '@infrastructure/decorators/role-protected.decorator';
 import { User } from '@models/User.entity';
 import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 import { VerifyCodeDto } from './dto/verify-code.dto';
 import { JwtAuthRolesGuard } from '@modules/auth/guards/jwt-auth-roles.guard';
+import { META_ROLES } from '@infrastructure/constants';
+import { RoleAdminType } from '@models/Admin.entity';
 
 const allowedFileExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
 
@@ -27,7 +42,7 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthRolesGuard)
-  @Roles('admin')
+  @SetMetadata(META_ROLES, [RoleAdminType.SUPER_ADMIN, RoleAdminType.ADMIN])
   @ApiOperation({ summary: 'Obtiene lista de usuarios, solo admin' })
   @Get('all')
   async getUsers() {
