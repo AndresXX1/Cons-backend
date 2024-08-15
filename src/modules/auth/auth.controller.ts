@@ -1,5 +1,5 @@
 import { Public } from '@infrastructure/decorators/public-route.decorator';
-import { Body, Controller, Delete, Get, Param, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiBody, ApiTags, ApiOperation } from '@nestjs/swagger';
 import { Request } from 'express';
 import { AuthService } from './auth.service';
@@ -101,7 +101,7 @@ export class AuthController {
   @Public()
   @ApiBody({ type: ForgetPasswordDto })
   @Post('forget-password')
-  async forgetPassword(@Body() forgetPasswordDto: ForgetPasswordDto, @Res({ passthrough: true }) response) {
+  async forgetPassword(@Body() forgetPasswordDto: ForgetPasswordDto) {
     const userResponse = await this.authService.forgetPassword(forgetPasswordDto);
     return userResponse;
   }
@@ -109,7 +109,7 @@ export class AuthController {
   @Public()
   @ApiBody({ type: ForgetPasswordCodeDto })
   @Post('/forget-password-code')
-  async forgetPasswordCode(@Body() forgetPasswordCodeDto: ForgetPasswordCodeDto, @Res({ passthrough: true }) response) {
+  async forgetPasswordCode(@Body() forgetPasswordCodeDto: ForgetPasswordCodeDto) {
     const userResponse = await this.authService.forgetPasswordCode(forgetPasswordCodeDto);
     return userResponse;
   }
@@ -117,7 +117,7 @@ export class AuthController {
   @Public()
   @ApiBody({ type: ForgetPasswordNewPasswordDto })
   @Post('/forget-password-new-password')
-  async forgetPasswordNewPassword(@Body() forgetPasswordNewPasswordDto: ForgetPasswordNewPasswordDto, @Res({ passthrough: true }) response) {
+  async forgetPasswordNewPassword(@Body() forgetPasswordNewPasswordDto: ForgetPasswordNewPasswordDto) {
     const userResponse = await this.authService.forgetPasswordNewPassword(forgetPasswordNewPasswordDto);
     return userResponse;
   }

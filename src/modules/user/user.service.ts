@@ -5,10 +5,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '@models/User.entity';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
+import { UpdateFirstDataDto } from './dto/first-data.dto';
+import { UpdateSecondDataDto } from './dto/second-data.dto';
+import axios from 'axios';
 
 @Injectable()
 export class UserService {
   private readonly logger = new Logger(UserService.name);
+  private readonly ticket = '5B0FA15E-7FA0-4510-9C54-F74CC4059E30';
+  private readonly smarterBaseUrl = 'http://smarter.argenpesos.com.ar:30002';
 
   constructor(
     @InjectRepository(User)
@@ -271,5 +276,111 @@ export class UserService {
       return null;
     }
     return user;
+  }
+
+  async updateFirstData(userId: number, updateFirstDataDto: UpdateFirstDataDto) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    if (!user) {
+      throw new NotFoundException('El usuario no existe.');
+    }
+    user.first_name = updateFirstDataDto.first_name;
+    user.last_name = updateFirstDataDto.last_name;
+    user.cuil = updateFirstDataDto.cuil;
+    await this.userRepository.save(user);
+    return user;
+  }
+
+  formatDateToISO(date: Date): string {
+    if (typeof date === 'string') {
+      return `${date}`;
+    } else {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+  }
+
+  async updateSecondData(userId: number, updateSecondDataDto: UpdateSecondDataDto) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    if (!user) {
+      throw new NotFoundException('El usuario no existe.');
+    }
+    user.birthday = updateSecondDataDto.birthday;
+    user.phone = updateSecondDataDto.phone;
+
+    await this.userRepository.save(user);
+    return user;
+  }
+  /*20202052054	1968-04-14 
+27224297012	1973-01-07 
+27316802600	1982-06-06
+
+27278067993	1968-08-05  
+20112452525		1955-04-20 
+20279410972	1980-02-10*/
+  async getSmarterData(userId: number) {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { id: userId },
+      });
+      if (user?.birthday && user?.cuil) {
+        let credits = [];
+        let offer = undefined;
+
+        const url = `${this.smarterBaseUrl}/External/app_iniciosesion`;
+        const url2 = `${this.smarterBaseUrl}/External/app_estadocuenta`;
+        const url3 = `${this.smarterBaseUrl}/External/app_consultacupo`;
+
+        const fecha = this.formatDateToISO(user.birthday);
+
+        const payload = {
+          cuil: user.cuil,
+          ticket: this.ticket,
+          fechaNacimiento: fecha,
+        };
+
+        const response = await axios.post(url, payload);
+        //this.logger.debug(response.data);
+
+        if (response.data.statusCode === 201 && response.data.result.valido) {
+          const params = {
+            personaId: response.data.result.personaId,
+            ticket: this.ticket,
+            token: response.data.result.token,
+          };
+          const response2 = await axios.get(url2, { params });
+          if (response2.data.statusCode === 201) {
+            credits = response2.data.result;
+            //this.logger.debug(response2.data);
+          }
+
+          const params2 = {
+            cuil: user.cuil,
+            ticket: this.ticket,
+            token: response.data.result.token,
+          };
+
+          const response3 = await axios.get(url3, { params: params2 });
+          if (response3.data.statusCode === 201) {
+            offer = response3.data.result;
+            //this.logger.debug(response3.data);
+          }
+
+          return { info: response.data.result, credits: credits, offer: offer };
+        } else {
+          return { info: undefined, credits: [], offer: undefined };
+        }
+      } else {
+        return { info: undefined, credits: [], offer: undefined };
+      }
+    } catch (error) {
+      return { info: undefined, credits: [], offer: undefined };
+      this.logger.debug(error);
+    }
   }
 }

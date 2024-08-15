@@ -25,6 +25,8 @@ import { VerifyCodeDto } from './dto/verify-code.dto';
 import { JwtAuthRolesGuard } from '@modules/auth/guards/jwt-auth-roles.guard';
 import { META_ROLES } from '@infrastructure/constants';
 import { RoleAdminType } from '@models/Admin.entity';
+import { UpdateFirstDataDto } from './dto/first-data.dto';
+import { UpdateSecondDataDto } from './dto/second-data.dto';
 
 const allowedFileExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
 
@@ -38,7 +40,9 @@ export class UserController {
   @ApiBearerAuth()
   @Get('')
   async getProfile(@GetUser() user: User) {
-    return { ok: true, user };
+    const userId = parseInt(`${user.id}`, 10);
+    const smarterData = await this.userService.getSmarterData(userId);
+    return { ok: true, user, smarter: smarterData };
   }
 
   @UseGuards(JwtAuthRolesGuard)
@@ -96,6 +100,30 @@ export class UserController {
     const serviceResponse = await this.userService.verifyEmailCode(dto.code, userId);
 
     return serviceResponse;
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Recibe el nombre, apellido y cuil',
+  })
+  @Post('first-data')
+  async updateFirstData(@GetUser() user: User, @Body() updateFirstDataDto: UpdateFirstDataDto) {
+    const userId = parseInt(`${user.id}`, 10);
+    const userResponse = await this.userService.updateFirstData(userId, updateFirstDataDto);
+
+    return { ok: true, user: userResponse };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({
+    summary: 'Recibe el fecha de nacimiento y numero de telefono',
+  })
+  @Post('second-data')
+  async updateSecondData(@GetUser() user: User, @Body() updateSecondDataDto: UpdateSecondDataDto) {
+    const userId = parseInt(`${user.id}`, 10);
+    const userResponse = await this.userService.updateSecondData(userId, updateSecondDataDto);
+
+    return { ok: true, user: userResponse };
   }
 
   @UseGuards(JwtAuthGuard)
