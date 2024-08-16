@@ -37,6 +37,12 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', default: '' })
   phone: string;
 
+  @Column({ type: 'varchar', default: '' })
+  cuil: string;
+
+  @Column({ type: 'date', nullable: true })
+  birthday: Date;
+
   @Column({ type: 'date', nullable: true })
   date: Date;
 
