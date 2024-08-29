@@ -10,6 +10,23 @@ export class ProductService {
 
   constructor(private readonly configService: ConfigService) {}
 
+  async getProducts() {
+    try {
+      const url = `https://api.tiendanube.com/v1/1358466/products`;
+
+      const response = await axios.get(url, {
+        headers: { Authentication: `bearer 14ef97c062b522301c4b78ac0b236ef8b52af5d4`, 'Content-Type': 'application/json' },
+      });
+
+      //this.logger.debug(response.data);
+
+      return response.data;
+    } catch (error) {
+      this.logger.debug(error);
+      return [];
+    }
+  }
+
   async updateProducts() {
     console.log('updateProducts');
     // try {
