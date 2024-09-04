@@ -14,6 +14,7 @@ import { AdminModule } from '@modules/admin/admin.module';
 import { BannerModule } from '@modules/banner/banner.module';
 import { NoticeModule } from '@modules/notice/notice.module';
 import { ProductModule } from '@modules/product/product.module';
+import { CuponModule } from '@modules/cupon/cupon.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { ProductModule } from '@modules/product/product.module';
     BannerModule,
     NoticeModule,
     ProductModule,
+    CuponModule,
   ],
   controllers: [AppController],
   providers: [AppService, DataService],
