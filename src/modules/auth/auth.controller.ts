@@ -56,6 +56,14 @@ export class AuthController {
     return { ok: true, token };
   }
 
+  @Public()
+  @ApiOperation({ summary: 'Verifica la cuenta' })
+  @Post('/verify-email')
+  async verifyEmail(@Body() { verifyCode, userId }: { verifyCode: string; userId: number }) {
+    const token = await this.authService.verifyEmail(verifyCode, userId);
+    return { ok: true, token };
+  }
+
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Elimina la session actual del user' })
   @Post('/log-out')

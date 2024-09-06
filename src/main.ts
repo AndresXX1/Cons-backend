@@ -33,7 +33,12 @@ async function bootstrap() {
     preflightContinue: false,
     optionsSuccessStatus: 204,
     credentials: true,
-    origin: [/http\:\/\/localhost\:\d{1,5}$/, /https?:\/\/(?:[^\/]+\.)*argenpesos\.com\.ar$/, 'https://argenpesos.maylandlabs.com'],
+    origin: [
+      /http\:\/\/localhost\:\d{1,5}$/,
+      /https?:\/\/(?:[^\/]+\.)*argenpesos\.com\.ar$/,
+      /https?:\/\/(?:[^\/]+\.)*argencompras\.com\.ar$/,
+      'https://argenpesos.maylandlabs.com',
+    ],
   });
   app.setGlobalPrefix('api');
 
