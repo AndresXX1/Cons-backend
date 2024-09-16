@@ -9,10 +9,18 @@ import { User } from '@models/User.entity';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @ApiOperation({ summary: 'Obtiene la lista de productos' })
+  @ApiOperation({ summary: 'Obtiene solo productos visibles en el app' })
   @ApiBearerAuth()
   @Get('')
   async getProfile(@GetUser() user: User) {
+    const products = await this.productService.getProducts();
+    return { ok: true, user, products: products };
+  }
+
+  @ApiOperation({ summary: 'Obtiene todos los productos' })
+  @ApiBearerAuth()
+  @Get('all')
+  async getProfileAll(@GetUser() user: User) {
     const products = await this.productService.getProducts();
     return { ok: true, user, products: products };
   }

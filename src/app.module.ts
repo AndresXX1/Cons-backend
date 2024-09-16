@@ -15,6 +15,7 @@ import { BannerModule } from '@modules/banner/banner.module';
 import { NoticeModule } from '@modules/notice/notice.module';
 import { ProductModule } from '@modules/product/product.module';
 import { CuponModule } from '@modules/cupon/cupon.module';
+import { BranchModule } from '@modules/branch/branch.module';
 
 @Module({
   imports: [
@@ -34,6 +35,10 @@ import { CuponModule } from '@modules/cupon/cupon.module';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'uploads', 'notice'),
       serveRoot: '/notice',
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'uploads', 'branch'),
+      serveRoot: '/branch',
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -57,6 +62,7 @@ import { CuponModule } from '@modules/cupon/cupon.module';
     NoticeModule,
     ProductModule,
     CuponModule,
+    BranchModule,
   ],
   controllers: [AppController],
   providers: [AppService, DataService],

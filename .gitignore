@@ -11,6 +11,8 @@ uploads/banner/*
 !uploads/file/index.html
 uploads/notice/*
 !uploads/notice/index.html
+uploads/branch/*
+!uploads/branch/index.html
 # Logs
 logs
 *.log

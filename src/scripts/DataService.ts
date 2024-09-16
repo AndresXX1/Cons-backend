@@ -112,7 +112,7 @@ export class DataService {
         email_code: '12345',
       },
       {
-        email: 'Douglasgrl27@gmail.com',
+        email: 'douglasgrl27@gmail.com',
         password: '123456',
         email_verified: true,
         email_code: '12345',
