@@ -16,6 +16,8 @@ import { ForgetPasswordCodeDto } from './dto/forget-password-code.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ForgetPasswordDto } from './dto/forget-password.dto';
 import { ForgetPasswordNewPasswordDto } from './dto/forget-password-new-password.dto';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
 
 export class validatedSession {
   user: User;
@@ -40,10 +42,11 @@ class AccessRefreshTokenGenerated {
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
-  userRepository: any;
 
   constructor(
     private readonly userService: UserService,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private readonly sessionService: SessionService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
@@ -312,6 +315,21 @@ export class AuthService {
     await this.sendEmail(userExist.email, emailVerificationCode);
     userExist.email_code = emailVerificationCode;
     await this.userService.save(userExist);
+
+    return {
+      ok: true,
+    };
+  }
+
+  async verifyEmail(verifyCode: string, userId: number) {
+    const userExist = await this.userService.findById(userId, ['email_code']);
+
+    if (!userExist) {
+      throw new NotFoundException('El usuario no existe.');
+    }
+    if (verifyCode === userExist.email_code) {
+      await this.userRepository.update(userId, { email_verified: true });
+    }
 
     return {
       ok: true,

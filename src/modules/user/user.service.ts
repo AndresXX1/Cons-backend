@@ -109,9 +109,10 @@ export class UserService {
     }
   }
 
-  async findById(userId: number): Promise<User> {
+  async findById(userId: number, select?: (keyof User)[]): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
+      select: select,
     });
     if (!user) {
       throw new NotFoundException('El usuario no existe.');
@@ -330,7 +331,7 @@ export class UserService {
       });
       if (user?.birthday && user?.cuil) {
         let credits = [];
-        let offer = undefined;
+        let offer: any = undefined;
 
         const url = `${this.smarterBaseUrl}/External/app_iniciosesion`;
         const url2 = `${this.smarterBaseUrl}/External/app_estadocuenta`;
@@ -369,6 +370,29 @@ export class UserService {
           if (response3.data.statusCode === 201) {
             offer = response3.data.result;
             //this.logger.debug(response3.data);
+          }
+
+          // this.logger.log(
+          //   'RESULT:',
+          //   JSON.stringify(
+          //     {
+          //       info: response.data.result,
+          //       credits: credits,
+          //       offer: offer,
+          //     },
+          //     null,
+          //     2,
+          //   ),
+          // );
+          if (offer) {
+            offer = {
+              resultado: offer.resultado || '',
+              maximoCapital: offer.maximoCapital?.toString() || '',
+              maximoCuota: offer.maximoCuota?.toString() || '',
+              consultaId: offer.consultaId || '',
+            };
+          } else {
+            offer = undefined;
           }
 
           return { info: response.data.result, credits: credits, offer: offer };
