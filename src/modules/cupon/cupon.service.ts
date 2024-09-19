@@ -12,13 +12,77 @@ export class CuponService {
 
   constructor(private readonly configService: ConfigService) {}
 
-  async getCupons() {
+  async getCuponsByCategory(id: number) {
     try {
       const response = await axios.get(`${this.url_api}/cupones`, {
         params: {
           key: 'ZOBEemSOWqU4wvIWEiWXgqDQfSALSKLbBjIZMPzYla9CYzKzZt7Y0CYCqva2V4DV',
           micrositio_id: 910752,
           codigo_afiliado: 12345678,
+          categoria: id,
+        },
+      });
+
+      return response.data.results;
+    } catch (error) {
+      this.logger.debug(error);
+      return [];
+    }
+  }
+
+  async getRecommendationCupons() {
+    try {
+      const response = await axios.get(`${this.url_api}/cupones`, {
+        params: {
+          key: 'ZOBEemSOWqU4wvIWEiWXgqDQfSALSKLbBjIZMPzYla9CYzKzZt7Y0CYCqva2V4DV',
+          micrositio_id: 910752,
+          codigo_afiliado: 12345678,
+        },
+      });
+
+      return response.data.results;
+    } catch (error) {
+      this.logger.debug(error);
+      return [];
+    }
+  }
+
+  async getRecommendationCupons2() {
+    try {
+      const response = await axios.get(`${this.url_api}/cupones`, {
+        params: {
+          key: 'ZOBEemSOWqU4wvIWEiWXgqDQfSALSKLbBjIZMPzYla9CYzKzZt7Y0CYCqva2V4DV',
+          micrositio_id: 910752,
+          codigo_afiliado: 12345678,
+          categoria: 15,
+        },
+      });
+
+      const response2 = await axios.get(`${this.url_api}/cupones`, {
+        params: {
+          key: 'ZOBEemSOWqU4wvIWEiWXgqDQfSALSKLbBjIZMPzYla9CYzKzZt7Y0CYCqva2V4DV',
+          micrositio_id: 910752,
+          codigo_afiliado: 12345678,
+          categoria: 2,
+        },
+      });
+
+      const allResults = [...response.data.results, ...response2.data.results];
+      return allResults;
+    } catch (error) {
+      this.logger.debug(error);
+      return [];
+    }
+  }
+
+  async getRecommendationCupons3() {
+    try {
+      const response = await axios.get(`${this.url_api}/cupones`, {
+        params: {
+          key: 'ZOBEemSOWqU4wvIWEiWXgqDQfSALSKLbBjIZMPzYla9CYzKzZt7Y0CYCqva2V4DV',
+          micrositio_id: 910752,
+          codigo_afiliado: 12345678,
+          categoria: 11,
         },
       });
 
