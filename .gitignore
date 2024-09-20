@@ -13,6 +13,7 @@ uploads/notice/*
 !uploads/notice/index.html
 uploads/branch/*
 !uploads/branch/index.html
+package-lock.json
 # Logs
 logs
 *.log

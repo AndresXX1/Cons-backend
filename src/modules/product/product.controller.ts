@@ -17,6 +17,13 @@ export class ProductController {
     return { ok: true, user, products: products };
   }
 
+  @ApiOperation({ summary: 'Obtiene los productos de Argen y Finadi' })
+  @Get('/contabilium')
+  async getContabiliumProducts() {
+    const result = await this.productService.getContabiliumProducts();
+    return { ok: true, contabiliumProducts: result };
+  }
+
   @ApiOperation({ summary: 'Obtiene todos los productos' })
   @ApiBearerAuth()
   @Get('all')
