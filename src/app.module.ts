@@ -16,6 +16,7 @@ import { NoticeModule } from '@modules/notice/notice.module';
 import { ProductModule } from '@modules/product/product.module';
 import { CuponModule } from '@modules/cupon/cupon.module';
 import { BranchModule } from '@modules/branch/branch.module';
+import { PaymentModule } from '@modules/payment/payment.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { BranchModule } from '@modules/branch/branch.module';
     ProductModule,
     CuponModule,
     BranchModule,
+    PaymentModule,
   ],
   controllers: [AppController],
   providers: [AppService, DataService],
