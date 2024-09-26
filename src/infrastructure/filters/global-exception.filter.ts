@@ -1,4 +1,4 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger } from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger, BadRequestException } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 interface CustomException {
@@ -29,9 +29,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
           }
     ) as CustomException;
 
-    const message = typeof raisedExceptionResponse === 'string' ? raisedExceptionResponse : raisedExceptionResponse.message;
-    const error = raisedExceptionResponse.error;
+    let message = typeof raisedExceptionResponse === 'string' ? raisedExceptionResponse : raisedExceptionResponse.message;
+    const error = raisedExceptionResponse['error'] || 'InternalServerError';
     const path = request.path;
+
+    if (exception instanceof BadRequestException && Array.isArray(message)) {
+      message = message[0]; // Solo tomar el primer mensaje de error
+    }
 
     response.status(status).json({
       ok: false,
