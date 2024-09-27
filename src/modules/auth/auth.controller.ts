@@ -56,12 +56,12 @@ export class AuthController {
     return { ok: true, token };
   }
 
-  @Public()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Verifica la cuenta' })
   @Post('/verify-email')
-  async verifyEmail(@Body() { verifyCode, userId }: { verifyCode: string; userId: number }) {
-    const token = await this.authService.verifyEmail(verifyCode, userId);
-    return { ok: true, token };
+  async verifyEmail(@GetUser() user: User, @Body() { verifyCode }: { verifyCode: string }) {
+    const verifyEmailResponse = await this.authService.verifyEmail(verifyCode, user.id);
+    return verifyEmailResponse;
   }
 
   @UseGuards(JwtAuthGuard)

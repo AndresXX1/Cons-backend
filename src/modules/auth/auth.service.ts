@@ -323,14 +323,13 @@ export class AuthService {
 
   async verifyEmail(verifyCode: string, userId: number) {
     const userExist = await this.userService.findById(userId, ['email_code']);
-
     if (!userExist) {
       throw new NotFoundException('El usuario no existe.');
     }
-    if (verifyCode === userExist.email_code) {
-      await this.userRepository.update(userId, { email_verified: true });
+    if (verifyCode !== userExist.email_code) {
+      throw new HttpException('Codigo incorrecto.', HttpStatus.BAD_REQUEST);
     }
-
+    await this.userRepository.update(userId, { email_verified: true });
     return {
       ok: true,
     };
