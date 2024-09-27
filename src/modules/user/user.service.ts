@@ -63,7 +63,7 @@ export class UserService {
       await this.mailerService.sendMail({
         to: email,
         from: this.configService.get<string>('nodemailer.from'),
-        subject: 'Argenpesos: Verifica tu correo electronico',
+        subject: 'Argenpesos: Codigo de Verificacion',
         template: 'index',
         context: {
           code,
