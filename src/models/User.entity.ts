@@ -12,6 +12,12 @@ export class User extends BaseEntity {
   @Column({ type: 'boolean', default: false })
   email_verified: boolean;
 
+  @Column({ type: 'boolean', default: false })
+  cuponizate: boolean;
+
+  @Column({ type: 'varchar', default: null, nullable: true })
+  notification_token: string;
+
   @Column({ type: 'varchar', length: 128, nullable: false, select: false })
   password: string;
 

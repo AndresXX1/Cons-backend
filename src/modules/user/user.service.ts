@@ -199,7 +199,11 @@ export class UserService {
   }
 
   async getUsers(): Promise<User[]> {
-    return await this.userRepository.find({});
+    return await this.userRepository.find({
+      order: {
+        id: 'ASC',
+      },
+    });
   }
 
   async getAllUsers(userId: number, data: { first: number; second: number }): Promise<User[]> {
@@ -406,5 +410,11 @@ export class UserService {
       return { info: undefined, credits: [], offer: undefined };
       this.logger.debug(error);
     }
+  }
+
+  async putUserCuponizate(userId: number) {
+    const user = await this.findById(userId);
+    user.cuponizate = !user.cuponizate;
+    return this.userRepository.save(user);
   }
 }
