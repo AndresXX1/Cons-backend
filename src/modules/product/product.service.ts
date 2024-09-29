@@ -1,8 +1,11 @@
+import { Product } from '@models/Product.entity';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
 import * as DeviceDetector from 'device-detector-js';
 import * as qs from 'qs';
+import { Repository } from 'typeorm';
 @Injectable()
 export class ProductService {
   private readonly deviceDetector = new DeviceDetector();
@@ -11,7 +14,11 @@ export class ProductService {
   private argenToken = '';
   private tokensExpires = new Date();
 
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
+    private readonly configService: ConfigService,
+  ) {}
 
   async getProducts() {
     try {
@@ -126,4 +133,30 @@ export class ProductService {
 
     return allProducts;
   };
+
+  async getProductsDB() {
+    return await this.productRepository.find({});
+  }
+
+  async getProductDB(productId: number) {
+    const productDB = await this.productRepository.findOne({
+      where: {
+        api_id: productId,
+      },
+    });
+
+    if (!productDB) {
+      const newProduct = new Product();
+      newProduct.api_id = productId;
+      newProduct.is_visible = true;
+      await this.productRepository.save(newProduct);
+      return newProduct;
+    }
+
+    return productDB;
+  }
+
+  async updateProduct(product: Product) {
+    await this.productRepository.save(product);
+  }
 }

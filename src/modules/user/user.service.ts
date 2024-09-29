@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-import { Not, Repository } from 'typeorm';
+import { And, Between, IsNull, LessThan, Not, Repository } from 'typeorm';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '@models/User.entity';
@@ -417,5 +417,96 @@ export class UserService {
     const user = await this.findById(userId);
     user.cuponizate = !user.cuponizate;
     return this.userRepository.save(user);
+  }
+
+  async getAgeStatistics(): Promise<{
+    age: {
+      age18_30: number;
+      age31_45: number;
+      age46_60: number;
+      age61_over: number;
+      total: number;
+    };
+  }> {
+    const currentDate = new Date();
+
+    const date18 = new Date(currentDate.getFullYear() - 18, currentDate.getMonth(), currentDate.getDate());
+    const date30 = new Date(currentDate.getFullYear() - 30, currentDate.getMonth(), currentDate.getDate());
+    const date45 = new Date(currentDate.getFullYear() - 45, currentDate.getMonth(), currentDate.getDate());
+    const date60 = new Date(currentDate.getFullYear() - 60, currentDate.getMonth(), currentDate.getDate());
+    const date61 = new Date(currentDate.getFullYear() - 61, currentDate.getMonth(), currentDate.getDate());
+
+    const age18_30 = await this.userRepository.count({
+      where: {
+        birthday: Between(date30, date18),
+      },
+    });
+
+    const age31_45 = await this.userRepository.count({
+      where: {
+        birthday: Between(date45, date30),
+      },
+    });
+
+    const age46_60 = await this.userRepository.count({
+      where: {
+        birthday: Between(date60, date45),
+      },
+    });
+
+    const age61_over = await this.userRepository.count({
+      where: {
+        birthday: And(Not(IsNull()), LessThan(date61)),
+      },
+    });
+
+    const total = await this.userRepository.count({
+      where: {
+        birthday: Not(IsNull()),
+      },
+    });
+
+    return {
+      age: {
+        age18_30,
+        age31_45,
+        age46_60,
+        age61_over,
+        total,
+      },
+    };
+  }
+
+  async getActiveUsersCountLastWeek(): Promise<number> {
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+    return await this.userRepository.count({
+      where: {
+        last_login: Between(oneWeekAgo, new Date()),
+      },
+    });
+  }
+
+  async getGenderStats(): Promise<{ female: number; male: number; total: number }> {
+    const femaleCount = await this.userRepository.count({
+      where: {
+        gender: 'female',
+      },
+    });
+
+    const maleCount = await this.userRepository.count({
+      where: {
+        gender: 'male',
+      },
+    });
+
+    const total = femaleCount + maleCount;
+
+    return {
+      female: femaleCount,
+      male: maleCount,
+      total,
+    };
   }
 }

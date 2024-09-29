@@ -46,11 +46,14 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', default: '' })
   cuil: string;
 
-  @Column({ type: 'date', nullable: true })
+  @Column({ type: 'date', nullable: true, default: null })
   birthday: Date;
 
   @Column({ type: 'date', nullable: true })
   date: Date;
+
+  @Column({ type: 'varchar', default: null, nullable: true })
+  gender: string;
 
   // -------- Relations ---------
   @OneToMany(() => Session, (session) => session.user)
