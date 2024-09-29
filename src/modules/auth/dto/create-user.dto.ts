@@ -14,4 +14,6 @@ export class CreateUserDto {
     message: 'La contraseña debe tener entre 6 y 20 caracteres.',
   })
   password: string;
+
+  tokenNotifications: string;
 }

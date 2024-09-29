@@ -15,7 +15,7 @@ export class User extends BaseEntity {
   @Column({ type: 'boolean', default: false })
   cuponizate: boolean;
 
-  @Column({ type: 'varchar', default: null, nullable: true })
+  @Column({ type: 'varchar', length: 255, default: '' })
   notification_token: string;
 
   @Column({ type: 'varchar', length: 128, nullable: false, select: false })

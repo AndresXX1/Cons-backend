@@ -153,8 +153,9 @@ export class UserService {
     return null;
   }
 
-  async updateLastLogin(user: User): Promise<User> {
+  async updateLastLogin(user: User, token_notifications): Promise<User> {
     user.last_login = new Date();
+    user.notification_token = token_notifications;
     return this.userRepository.save(user);
   }
 
