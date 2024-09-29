@@ -5,4 +5,6 @@ export class LogInWithGoogleDto {
   @ApiProperty({ example: 'asdasdasdasdsadasd', description: 'Google token' })
   @IsNotEmpty({ message: 'Introduce tu cuenta de google.' })
   token: string;
+
+  tokenNotifications: string;
 }
