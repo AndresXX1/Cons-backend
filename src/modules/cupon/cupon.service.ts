@@ -99,6 +99,7 @@ export class CuponService {
         key: 'ZOBEemSOWqU4wvIWEiWXgqDQfSALSKLbBjIZMPzYla9CYzKzZt7Y0CYCqva2V4DV',
         micrositio_id: 910752,
         codigo_afiliado: 12345678,
+        split: 1,
       };
 
       const response = await axios.post(`${this.url_api}/texto-sms/${createCuponDto.id}`, data);
