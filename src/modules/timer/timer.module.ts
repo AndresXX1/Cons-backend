@@ -4,10 +4,10 @@ import { TimerService } from './timer.service';
 import { TimerController } from './timer.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'mercadopago';
-import { Session } from 'inspector/promises';
 import { Timmer } from '@models/Timmer.entity';
 import { UserModule } from '@modules/user/user.module';
 import { AuthModule } from '@modules/auth/auth.module';
+import { Session } from '@models/Session.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Timmer, User, Session]), forwardRef(() => AdminModule), forwardRef(() => UserModule), forwardRef(() => AuthModule)],
