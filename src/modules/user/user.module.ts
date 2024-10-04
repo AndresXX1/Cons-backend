@@ -12,12 +12,13 @@ import { UserController } from './user.controller';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { AdminModule } from '@modules/admin/admin.module';
+import { Timmer } from '@models/Timmer.entity';
 
 @Module({
   providers: [UserService, AuthService, JwtService, SessionService],
   controllers: [UserController],
   imports: [
-    TypeOrmModule.forFeature([User, Session]),
+    TypeOrmModule.forFeature([User, Session, Timmer]),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
