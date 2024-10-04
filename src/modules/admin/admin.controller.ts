@@ -31,6 +31,7 @@ import { CreateAdminDto } from './dto/create-admin.dto';
 import { FullNameDto } from './dto/full-name.dto';
 import { PasswordDto } from './dto/password.dto';
 import { UserService } from '@modules/user/user.service';
+import { TimerService } from '@modules/timer/timer.service';
 
 const allowedFileExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
 
@@ -40,6 +41,7 @@ export class AdminController {
   constructor(
     private readonly adminService: AdminService,
     private readonly userService: UserService,
+    private readonly timerService: TimerService,
   ) {}
 
   @UseGuards(JwtAuthRolesGuard)
@@ -60,6 +62,7 @@ export class AdminController {
     const age = await this.userService.getAgeStatistics();
     const activeUsersTheseWeek = await this.userService.getActiveUsersCountLastWeek();
     const gender = await this.userService.getGenderStats();
+    const timers = await this.timerService.getTimers();
     return {
       ok: true,
       dashboard: {
@@ -73,6 +76,7 @@ export class AdminController {
         age,
         gender,
         created_users: [10, 9, 8, 7, 6, 5, 4, 3],
+        timers,
       },
     };
   }

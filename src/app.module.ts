@@ -17,6 +17,7 @@ import { ProductModule } from '@modules/product/product.module';
 import { CuponModule } from '@modules/cupon/cupon.module';
 import { BranchModule } from '@modules/branch/branch.module';
 import { PaymentModule } from '@modules/payment/payment.module';
+import { TimerModule } from '@modules/timer/timer.module';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { PaymentModule } from '@modules/payment/payment.module';
     CuponModule,
     BranchModule,
     PaymentModule,
+    TimerModule,
   ],
   controllers: [AppController],
   providers: [AppService, DataService],
