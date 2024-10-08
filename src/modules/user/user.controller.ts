@@ -56,6 +56,15 @@ export class UserController {
     return { ok: true, users: result };
   }
 
+  @UseGuards(JwtAuthRolesGuard)
+  @SetMetadata(META_ROLES, [RoleAdminType.SUPER_ADMIN, RoleAdminType.ADMIN])
+  @ApiOperation({ summary: 'Activa o desactiva un usuario, solo admin' })
+  @Put('cuponizate/:userId')
+  async putUserCuponizate(@Param('userId') userId: number) {
+    const user = await this.userService.putUserCuponizate(userId);
+    return { ok: true, user: user };
+  }
+
   @UseGuards(JwtAuthGuard)
   @Put('avatar')
   @ApiOperation({ summary: 'Edita tu avatar de usuario' })

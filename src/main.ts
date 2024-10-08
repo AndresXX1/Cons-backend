@@ -38,6 +38,7 @@ async function bootstrap() {
       /https?:\/\/(?:[^\/]+\.)*argenpesos\.com\.ar$/,
       /https?:\/\/(?:[^\/]+\.)*argencompras\.com\.ar$/,
       'https://argenpesos.maylandlabs.com',
+      'https://ecommerce.maylandlabs.com',
     ],
   });
   app.setGlobalPrefix('api');

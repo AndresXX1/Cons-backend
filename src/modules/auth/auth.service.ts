@@ -66,7 +66,7 @@ export class AuthService {
       throw new UnauthorizedException('Contraseña no válida.');
     }
 
-    await this.userService.updateLastLogin(user);
+    await this.userService.updateLastLogin(user, logInDto.tokenNotifications);
 
     const { refreshToken, session } = await this.generateAccessRefreshToken(req, user);
 
@@ -88,7 +88,7 @@ export class AuthService {
     if (!user) {
       const userCreated = await this.userService.createWithGoogle(googleUser.email);
 
-      await this.userService.updateLastLogin(userCreated);
+      await this.userService.updateLastLogin(userCreated, logInWithGoogleDto.tokenNotifications);
 
       const { refreshToken, session } = await this.generateAccessRefreshToken(req, userCreated);
 
@@ -101,7 +101,7 @@ export class AuthService {
       };
     }
 
-    await this.userService.updateLastLogin(user);
+    await this.userService.updateLastLogin(user, logInWithGoogleDto.tokenNotifications);
 
     const { refreshToken, session } = await this.generateAccessRefreshToken(req, user);
 
@@ -286,11 +286,13 @@ export class AuthService {
     }
   }
 
-  async signUp(req, { email, password }: CreateUserDto) {
+  async signUp(req, { email, password, tokenNotifications }: CreateUserDto) {
     const userExist = await this.userService.userExistByEmail(email);
     if (userExist) throw new NotFoundException('El usuario ya existe');
 
     const user = await this.userService.createUser(email, password);
+
+    await this.userService.updateLastLogin(user, tokenNotifications);
 
     const { refreshToken, session } = await this.generateAccessRefreshToken(req, user);
 
@@ -323,14 +325,13 @@ export class AuthService {
 
   async verifyEmail(verifyCode: string, userId: number) {
     const userExist = await this.userService.findById(userId, ['email_code']);
-
     if (!userExist) {
       throw new NotFoundException('El usuario no existe.');
     }
-    if (verifyCode === userExist.email_code) {
-      await this.userRepository.update(userId, { email_verified: true });
+    if (verifyCode !== userExist.email_code) {
+      throw new HttpException('Codigo incorrecto.', HttpStatus.BAD_REQUEST);
     }
-
+    await this.userRepository.update(userId, { email_verified: true });
     return {
       ok: true,
     };

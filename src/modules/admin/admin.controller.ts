@@ -30,13 +30,19 @@ import { diskStorage } from 'multer';
 import { CreateAdminDto } from './dto/create-admin.dto';
 import { FullNameDto } from './dto/full-name.dto';
 import { PasswordDto } from './dto/password.dto';
+import { UserService } from '@modules/user/user.service';
+import { TimerService } from '@modules/timer/timer.service';
 
 const allowedFileExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
 
 @Controller('admin')
 @ApiTags('admin')
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(
+    private readonly adminService: AdminService,
+    private readonly userService: UserService,
+    private readonly timerService: TimerService,
+  ) {}
 
   @UseGuards(JwtAuthRolesGuard)
   @SetMetadata(META_ROLES, [RoleAdminType.ADMIN, RoleAdminType.SUPER_ADMIN])
@@ -45,6 +51,34 @@ export class AdminController {
   @Get('')
   async getProfile(@GetAdmin() admin: Admin) {
     return { ok: true, user: admin };
+  }
+
+  @UseGuards(JwtAuthRolesGuard)
+  @SetMetadata(META_ROLES, [RoleAdminType.ADMIN, RoleAdminType.SUPER_ADMIN])
+  @ApiOperation({ summary: 'Obtiene datos de dashboard' })
+  @ApiBearerAuth()
+  @Get('data')
+  async getdata() {
+    const age = await this.userService.getAgeStatistics();
+    const activeUsersTheseWeek = await this.userService.getActiveUsersCountLastWeek();
+    const gender = await this.userService.getGenderStats();
+    const timers = await this.timerService.getTimers();
+    return {
+      ok: true,
+      dashboard: {
+        usage_time: {
+          last_week: 0,
+          these_week: 0,
+        },
+        active_users: {
+          these_week: activeUsersTheseWeek,
+        },
+        age,
+        gender,
+        created_users: [10, 9, 8, 7, 6, 5, 4, 3],
+        timers,
+      },
+    };
   }
 
   @UseGuards(JwtAuthRolesGuard)
