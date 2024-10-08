@@ -40,13 +40,21 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', default: '' })
   cuil: string;
 
-  @Column({ type: 'date', nullable: true })
-  birthday: Date;
+  @Column({ type: 'json', default: [] })
+  address: Address[];
 
   @Column({ type: 'date', nullable: true })
-  date: Date;
+  birthday: Date;
 
   // -------- Relations ---------
   @OneToMany(() => Session, (session) => session.user)
   sessions: Session[];
+}
+
+interface Address {
+  street: string;
+  number: number;
+  zipCode: string;
+  city: string;
+  province: string;
 }
