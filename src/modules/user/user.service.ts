@@ -8,6 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { UpdateFirstDataDto } from './dto/first-data.dto';
 import { UpdateSecondDataDto } from './dto/second-data.dto';
 import axios from 'axios';
+import { AddressDto } from './dto/address.dto';
 
 @Injectable()
 export class UserService {
@@ -318,6 +319,44 @@ export class UserService {
     }
     user.birthday = updateSecondDataDto.birthday;
     user.phone = updateSecondDataDto.phone;
+
+    await this.userRepository.save(user);
+    return user;
+  }
+
+  async createAddress(userId: number, address: AddressDto) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    if (!user) throw new NotFoundException('El usuario no existe.');
+
+    user.address.push(address);
+
+    await this.userRepository.save(user);
+    return user;
+  }
+
+  async editAddress(userId: number, addressIndex: number, updateAddress: AddressDto) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    if (!user) throw new NotFoundException('El usuario no existe.');
+    if(user.address.length <= addressIndex) throw new NotFoundException('La dirección no existe.');
+
+    user.address[addressIndex] = updateAddress;
+
+    await this.userRepository.save(user);
+    return user;
+  }
+
+  async deleteAddress(userId: number, addressIndex: number) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    if (!user) throw new NotFoundException('El usuario no existe.');
+    if(user.address.length <= addressIndex) throw new NotFoundException('La dirección no existe.');
+
+    user.address.splice(addressIndex, 1);
 
     await this.userRepository.save(user);
     return user;

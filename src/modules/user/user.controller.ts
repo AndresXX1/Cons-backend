@@ -12,6 +12,7 @@ import {
   Post,
   Param,
   SetMetadata,
+  Delete,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
@@ -27,6 +28,7 @@ import { META_ROLES } from '@infrastructure/constants';
 import { RoleAdminType } from '@models/Admin.entity';
 import { UpdateFirstDataDto } from './dto/first-data.dto';
 import { UpdateSecondDataDto } from './dto/second-data.dto';
+import { AddressDto } from './dto/address.dto';
 
 const allowedFileExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
 
@@ -131,6 +133,36 @@ export class UserController {
   async updateSecondData(@GetUser() user: User, @Body() updateSecondDataDto: UpdateSecondDataDto) {
     const userId = parseInt(`${user.id}`, 10);
     const userResponse = await this.userService.updateSecondData(userId, updateSecondDataDto);
+
+    return { ok: true, user: userResponse };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Subir dirección' })
+  @Post('address')
+  async createAddress(@GetUser() user: User, @Body() address: AddressDto) {
+    const userId = parseInt(`${user.id}`, 10);
+    const userResponse = await this.userService.createAddress(userId, address);
+
+    return { ok: true, user: userResponse };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Editar dirección' })
+  @Put('address/:index')
+  async editAddress(@GetUser() user: User, @Body() updatedAddress: AddressDto, @Param('index') index: number) {
+    const userId = parseInt(`${user.id}`, 10);
+    const userResponse = await this.userService.editAddress(userId, index, updatedAddress);
+
+    return { ok: true, user: userResponse };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Eliminar dirección' })
+  @Delete('address/:index')
+  async deleteAddress(@GetUser() user: User, @Param('index') index: number) {
+    const userId = parseInt(`${user.id}`, 10);
+    const userResponse = await this.userService.deleteAddress(userId, index);
 
     return { ok: true, user: userResponse };
   }
