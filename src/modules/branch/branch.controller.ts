@@ -1,4 +1,19 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Post, SetMetadata, UnsupportedMediaTypeException, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Post,
+  Put,
+  SetMetadata,
+  UnsupportedMediaTypeException,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BranchService } from './branch.service';
 import { JwtAuthRolesGuard } from '@modules/auth/guards/jwt-auth-roles.guard';
@@ -62,5 +77,23 @@ export class BranchController {
   async createBranch(@Body() createBranchDto: CreateBranchDto) {
     const result = await this.branchService.createBranch(createBranchDto);
     return { ok: true, branch: result };
+  }
+
+  @UseGuards(JwtAuthRolesGuard)
+  @SetMetadata(META_ROLES, [RoleAdminType.ADMIN, RoleAdminType.SUPER_ADMIN])
+  @ApiOperation({ summary: 'Actualizar sucursal' })
+  @Put(':id')
+  async updateBranch(@Param('id') id: number, @Body() updateBranchDto: CreateBranchDto) {
+    const result = await this.branchService.UpdateBranch(id, updateBranchDto);
+    return { ok: true, branch: result };
+  }
+
+  @UseGuards(JwtAuthRolesGuard)
+  @SetMetadata(META_ROLES, [RoleAdminType.ADMIN, RoleAdminType.SUPER_ADMIN])
+  @ApiOperation({ summary: 'Eliminar sucursal' })
+  @Delete(':id')
+  async deleteBranch(@Param('id') id: number) {
+    await this.branchService.deleteBranch(id);
+    return { ok: true, message: `Branch with ID ${id} deleted successfully` };
   }
 }
