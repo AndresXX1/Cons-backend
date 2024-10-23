@@ -29,6 +29,7 @@ import { RoleAdminType } from '@models/Admin.entity';
 import { UpdateFirstDataDto } from './dto/first-data.dto';
 import { UpdateSecondDataDto } from './dto/second-data.dto';
 import { AddressDto } from './dto/address.dto';
+import { updateUserDataDto } from './dto/update-user-data.dto';
 
 const allowedFileExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
 
@@ -172,5 +173,10 @@ export class UserController {
   @ApiOperation({ summary: 'Busqueda de usuario por id' })
   async searchUserById(@Param('userId2') userId2: number) {
     return this.userService.findById(Number(userId2));
+  }
+
+  @Put(':id')
+  async updateUserData(@Param('id') userId: number, @Body() updateUserDataDto: updateUserDataDto) {
+    return this.userService.updateUserData(userId, updateUserDataDto);
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Branch } from '@models/Branch.entity';
@@ -30,5 +30,37 @@ export class BranchService {
     branch.lat = createBranchDto.lat;
     branch.lon = createBranchDto.lon;
     return await this.bannerRepository.save(branch);
+  }
+
+  async UpdateBranch(userid: number, updateBranchDto: CreateBranchDto): Promise<Branch> {
+    const branch = await this.bannerRepository.findOne({ where: { id: userid } });
+
+    if (!branch) {
+      throw new NotFoundException(`Branch with ID ${userid} not found`);
+    }
+
+    branch.name = updateBranchDto.name;
+    branch.image = updateBranchDto.image;
+    branch.address = updateBranchDto.address;
+    branch.schedules_1 = updateBranchDto.schedules_1;
+    branch.schedules_2 = updateBranchDto.schedules_2;
+    branch.whatsapp = updateBranchDto.whatsapp;
+    branch.phone = updateBranchDto.phone;
+    branch.lat = updateBranchDto.lat;
+    branch.lon = updateBranchDto.lon;
+
+    return await this.bannerRepository.save(branch);
+  }
+
+  async deleteBranch(userId: number): Promise<Branch> {
+    const branch = await this.bannerRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!branch) {
+      throw new NotFoundException(`Branch with ID ${userId} not found`);
+    }
+
+    return await this.bannerRepository.remove(branch);
   }
 }

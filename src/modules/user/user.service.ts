@@ -9,6 +9,7 @@ import { UpdateFirstDataDto } from './dto/first-data.dto';
 import { UpdateSecondDataDto } from './dto/second-data.dto';
 import axios from 'axios';
 import { AddressDto } from './dto/address.dto';
+import { updateUserDataDto } from './dto/update-user-data.dto';
 
 @Injectable()
 export class UserService {
@@ -341,7 +342,7 @@ export class UserService {
       where: { id: userId },
     });
     if (!user) throw new NotFoundException('El usuario no existe.');
-    if(user.address.length <= addressIndex) throw new NotFoundException('La dirección no existe.');
+    if (user.address.length <= addressIndex) throw new NotFoundException('La dirección no existe.');
 
     user.address[addressIndex] = updateAddress;
 
@@ -354,7 +355,7 @@ export class UserService {
       where: { id: userId },
     });
     if (!user) throw new NotFoundException('El usuario no existe.');
-    if(user.address.length <= addressIndex) throw new NotFoundException('La dirección no existe.');
+    if (user.address.length <= addressIndex) throw new NotFoundException('La dirección no existe.');
 
     user.address.splice(addressIndex, 1);
 
@@ -547,5 +548,22 @@ export class UserService {
       male: maleCount,
       total,
     };
+  }
+
+  async updateUserData(userId: number, updateUserDataDto: updateUserDataDto): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!user) {
+      throw new NotFoundException('El usuario no existe.');
+    }
+
+    user.first_name = updateUserDataDto.first_name;
+    user.last_name = updateUserDataDto.last_name;
+    user.cuil = updateUserDataDto.cuil;
+    user.birthday = updateUserDataDto.birthday;
+    user.phone = updateUserDataDto.phone;
+
+    await this.userRepository.save(user);
+    return user;
   }
 }
