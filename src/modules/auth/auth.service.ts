@@ -382,6 +382,7 @@ export class AuthService {
 
     return {
       ok: true,
+      code: forgetPasswordCodeDto.code,
     };
   }
 
