@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsNumber, Min, Max } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, Min, Max, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateBranchDto {
@@ -9,6 +9,7 @@ export class CreateBranchDto {
     maxLength: 100,
   })
   @IsString()
+  @IsOptional()
   @IsNotEmpty({ message: 'Introduce un nombre.' })
   name: string;
 
@@ -17,6 +18,7 @@ export class CreateBranchDto {
     description: 'URL de la imagen de la sucursal. Debe ser una URL válida.',
   })
   @IsString()
+  @IsOptional()
   image: string;
 
   @ApiProperty({
@@ -26,6 +28,7 @@ export class CreateBranchDto {
     maxLength: 200,
   })
   @IsString()
+  @IsOptional()
   @IsNotEmpty({ message: 'Introduce una dirección.' })
   address: string;
 
@@ -36,6 +39,7 @@ export class CreateBranchDto {
     maxLength: 100,
   })
   @IsString()
+  @IsOptional()
   schedules_1: string;
 
   @ApiProperty({
@@ -51,6 +55,7 @@ export class CreateBranchDto {
     example: '1123456789',
     description: 'Número de teléfono de la sucursal. Debe ser un número válido.',
   })
+  @IsOptional()
   @IsString()
   whatsapp: string;
 
@@ -59,6 +64,7 @@ export class CreateBranchDto {
     description: 'Número de teléfono de la sucursal. Debe ser un número válido.',
   })
   @IsString()
+  @IsOptional()
   phone: string;
 
   @ApiProperty({
@@ -68,6 +74,7 @@ export class CreateBranchDto {
     maximum: 90,
   })
   @IsNumber()
+  @IsOptional()
   @Min(-90, { message: 'La latitud debe ser mayor o igual a -90.' })
   @Max(90, { message: 'La latitud debe ser menor o igual a 90.' })
   lat: number;
@@ -79,6 +86,7 @@ export class CreateBranchDto {
     maximum: 180,
   })
   @IsNumber()
+  @IsOptional()
   @Min(-180, { message: 'La longitud debe ser mayor o igual a -180.' })
   @Max(180, { message: 'La longitud debe ser menor o igual a 180.' })
   lon: number;

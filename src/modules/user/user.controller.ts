@@ -175,6 +175,7 @@ export class UserController {
     return this.userService.findById(Number(userId2));
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put(':id')
   async updateUserData(@Param('id') userId: number, @Body() updateUserDataDto: updateUserDataDto) {
     return this.userService.updateUserData(userId, updateUserDataDto);
