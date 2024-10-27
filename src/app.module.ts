@@ -16,8 +16,8 @@ import { NoticeModule } from '@modules/notice/notice.module';
 import { ProductModule } from '@modules/product/product.module';
 import { CuponModule } from '@modules/cupon/cupon.module';
 import { BranchModule } from '@modules/branch/branch.module';
-import { PaymentModule } from '@modules/payment/payment.module';
 import { TimerModule } from '@modules/timer/timer.module';
+import { CategoryModule } from '@modules/category/category.module';
 
 @Module({
   imports: [
@@ -65,8 +65,8 @@ import { TimerModule } from '@modules/timer/timer.module';
     ProductModule,
     CuponModule,
     BranchModule,
-    PaymentModule,
     TimerModule,
+    CategoryModule
   ],
   controllers: [AppController],
   providers: [AppService, DataService],
