@@ -28,8 +28,8 @@ export default (): any => ({
     // shopId: process.env.SHOP_CLOUD_ID,
     // clientSecret: process.env.SHOP_CLOUD_CLIENT_SECRET,
   },
-  mercadopago: {
-    accessToken: process.env.MERCADOPAGO_ACCESS_TOKEN,
-    notificationUrl: process.env.NOTIFICATION_URL,
-  },
+  cuponizate: {
+    token: process.env.CUPONIZATE_TOKEN,
+    microsite: process.env.CUPONIZATE_MICROSITE
+  }
 });
