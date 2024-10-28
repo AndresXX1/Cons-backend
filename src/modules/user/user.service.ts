@@ -455,8 +455,34 @@ export class UserService {
 
   async putUserCuponizate(userId: number) {
     const user = await this.findById(userId);
-    user.cuponizate = !user.cuponizate;
-    return this.userRepository.save(user);
+
+    const microsite_id = this.configService.get<string>('cuponizate.microsite');
+    const token = this.configService.get<string>('cuponizate.token');
+
+    if (user.cuponizate === false) {
+      try {
+        const response = await axios.post(`https://apiv1.cuponstar.com/api/v2/microsite/${microsite_id}/affiliates`, { code: userId }, { headers: { token } });
+
+        if (response.data.success === true) user.cuponizate = !user.cuponizate;
+      } catch (error) {
+        this.logger.debug(error.detail);
+        throw new Error(error);
+      }
+
+      return this.userRepository.save(user);
+    }
+
+    if (user.cuponizate === true) {
+      try {
+        const response = await axios.delete(`https://apiv1.cuponstar.com/api/v2/microsite/${microsite_id}/affiliates/${userId}`, { headers: { token } });
+
+        if (response.data.success === true) user.cuponizate = !user.cuponizate;
+      } catch (error) {
+        this.logger.debug(error.detail);
+        throw new Error(error);
+      }
+      return this.userRepository.save(user);
+    }
   }
 
   async getAgeStatistics(): Promise<{

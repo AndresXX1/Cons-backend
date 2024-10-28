@@ -20,7 +20,15 @@ export class CuponController {
     return { ok: true, user, cupons: cupons, cupons2: cupons2, cupons3: cupons3 };
   }
 
-  @ApiOperation({ summary: 'Obtiene la lista de cupones ppor la categoria' })
+  @ApiOperation({ summary: 'Obtiene la lista de categorías de cupones' })
+  @ApiBearerAuth()
+  @Get('category')
+  async getCuponCategories(@GetUser() user: User) {
+    const categories = await this.cuponService.getCuponsCategories();
+    return { ok: true, user, categories };
+  }
+
+  @ApiOperation({ summary: 'Obtiene la lista de cupones por la categoria' })
   @ApiBearerAuth()
   @Get('/:id')
   async getCuponsByCategory(@GetUser() user: User, @Param('id') id: number) {
