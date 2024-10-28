@@ -12,6 +12,23 @@ export class CuponService {
 
   constructor(private readonly configService: ConfigService) {}
 
+  async getCuponsCategories() {
+    try {
+      const response = await axios.get(`${this.url_api}/categorias`, {
+        params: {
+          key: 'ZOBEemSOWqU4wvIWEiWXgqDQfSALSKLbBjIZMPzYla9CYzKzZt7Y0CYCqva2V4DV',
+          micrositio_id: 910752,
+          codigo_afiliado: 12345678,
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      this.logger.debug(error);
+      return [];
+    }
+  }
+
   async getCuponsByCategory(id: number) {
     try {
       const response = await axios.get(`${this.url_api}/cupones`, {
