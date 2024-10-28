@@ -6,6 +6,7 @@ import * as moment from 'moment';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '@models/User.entity';
+import axios from 'axios';
 
 @Injectable()
 export class NotificationService {
@@ -42,9 +43,29 @@ export class NotificationService {
       .andWhere('user.notification_token != :empty', { empty: '' })
       .getMany();
 
-    users.forEach((user) => {
-      console.log(`Sending push notification to ${user.id}: ${notification.title}`);
-      // Aquí se agregaría la lógica de envío real usando el tokenPush de cada usuario
+    users.forEach(async (user) => {
+      try {
+        const response = await axios.post(
+          'https://exp.host/--/api/v2/push/send',
+          {
+            to: user.notification_token,
+            title: notification.title,
+            sound: 'default',
+            data: { action: 'reload' },
+          },
+          {
+            headers: {
+              Accept: 'application/json',
+              'Accept-encoding': 'gzip, deflate',
+              'Content-Type': 'application/json',
+            },
+          },
+        );
+
+        console.log(`Notification sent to user ${user.id}:`, response.data);
+      } catch (error) {
+        console.error(`Failed to send notification to user ${user.id}:`, error);
+      }
     });
   }
 }
