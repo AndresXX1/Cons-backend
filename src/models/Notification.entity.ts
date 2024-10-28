@@ -1,12 +1,9 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column } from 'typeorm';
 
 import { BaseEntity } from './Base.entity';
 
 @Entity({ name: 'Notifications' })
 export class Notification extends BaseEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
-
   @Column()
   title: string;
 
@@ -18,4 +15,7 @@ export class Notification extends BaseEntity {
 
   @Column({ default: true })
   saveInHistory: boolean;
+
+  @Column({ default: true })
+  isPush: boolean;
 }

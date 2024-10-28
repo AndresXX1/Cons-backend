@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { Repository } from 'typeorm';
+import { LessThanOrEqual, MoreThan, Repository } from 'typeorm';
 import { Notification } from '@models/Notification.entity';
 import * as moment from 'moment';
 import { CreateNotificationDto } from './dto/create-notification.dto';
@@ -23,7 +23,7 @@ export class NotificationService {
     const now = moment().startOf('minute').toDate(); // Obtén la fecha actual con precisión de minutos
 
     const notifications = await this.notificationRepository.find({
-      where: { scheduledAt: now },
+      where: { scheduledAt: now, isPush: true },
     });
 
     notifications.forEach((notification) => {
@@ -34,6 +34,34 @@ export class NotificationService {
   async createNotification(createNotificationDto: CreateNotificationDto) {
     const notification = this.notificationRepository.create(createNotificationDto);
     return await this.notificationRepository.save(notification);
+  }
+
+  async getAllNotifications() {
+    const allNotifications = await this.notificationRepository.find();
+    if (allNotifications.length === 0) throw new NotFoundException('[ Notifications | getAllNotifications ]: No se encontró ninguna notificatión');
+    return allNotifications;
+  }
+  async getNextNotifications() {
+    const newDate = new Date();
+    const timezoneOffsetBuenosAires = -3 * 60 * 60 * 1000;
+    const currentDate = new Date(newDate.getTime() + timezoneOffsetBuenosAires);
+    const allNotifications = await this.notificationRepository.find({
+      where: {
+        scheduledAt: MoreThan(currentDate),
+      },
+      order: { scheduledAt: 'ASC' },
+      take: 5,
+    });
+    if (allNotifications.length === 0) throw new NotFoundException('[ Notifications | getAllNotifications ]: No se encontró ninguna notificatión');
+    return allNotifications;
+  }
+  async getOldNotifications() {
+    const newDate = new Date();
+    const timezoneOffsetBuenosAires = -3 * 60 * 60 * 1000;
+    const currentDate = new Date(newDate.getTime() + timezoneOffsetBuenosAires);
+    const allNotifications = await this.notificationRepository.find({ where: { scheduledAt: LessThanOrEqual(currentDate) }, order: { scheduledAt: 'DESC' }, take: 5 });
+    if (allNotifications.length === 0) throw new NotFoundException('[ Notifications | getAllNotifications ]: No se encontró ninguna notificatión');
+    return allNotifications;
   }
 
   async sendPushNotification(notification: Notification) {

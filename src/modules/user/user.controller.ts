@@ -30,7 +30,6 @@ import { UpdateFirstDataDto } from './dto/first-data.dto';
 import { UpdateSecondDataDto } from './dto/second-data.dto';
 import { AddressDto } from './dto/address.dto';
 import { updateUserDataDto } from './dto/update-user-data.dto';
-
 const allowedFileExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
 
 @Controller('user')
@@ -177,7 +176,8 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Put(':id')
-  async updateUserData(@Param('id') userId: number, @Body() updateUserDataDto: updateUserDataDto) {
-    return this.userService.updateUserData(userId, updateUserDataDto);
+  async updateUserData(@Param('id') userId: number, @Body() userData: updateUserDataDto) {
+    const result = await this.userService.updateUserData(userId, userData);
+    return { ok: true, updatedUser: result };
   }
 }
