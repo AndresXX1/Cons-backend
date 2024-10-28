@@ -18,10 +18,13 @@ import { CuponModule } from '@modules/cupon/cupon.module';
 import { BranchModule } from '@modules/branch/branch.module';
 import { TimerModule } from '@modules/timer/timer.module';
 import { CategoryModule } from '@modules/category/category.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { NotificationModule } from '@modules/notification/notification.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot(ConfigModuleOptions),
+    ScheduleModule.forRoot(),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'uploads', 'avatar'),
       serveRoot: '/avatar',
@@ -66,7 +69,8 @@ import { CategoryModule } from '@modules/category/category.module';
     CuponModule,
     BranchModule,
     TimerModule,
-    CategoryModule
+    NotificationModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService, DataService],
