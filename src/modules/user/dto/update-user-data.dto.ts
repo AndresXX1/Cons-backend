@@ -11,6 +11,7 @@ import {
   registerDecorator,
   ValidationArguments,
   ValidationOptions,
+  IsOptional,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { subYears } from 'date-fns';
@@ -40,7 +41,7 @@ export function IsAdult(validationOptions?: ValidationOptions) {
 export class updateUserDataDto {
   @ApiProperty({ example: 'Jose', description: 'Nombre' })
   @IsString()
-  @IsNotEmpty({ message: 'Introduce un nombre.' })
+  @IsOptional()
   @MinLength(3, { message: 'El nombre debe tener al menos 3 caracteres.' })
   @MaxLength(28, { message: 'El nombre no debe exceder los 28 caracteres.' })
   @Matches(/^\S.*\S$|^\S$/, { message: 'El nombre no puede tener espacios al inicio o al final.' })
@@ -48,7 +49,7 @@ export class updateUserDataDto {
 
   @ApiProperty({ example: 'Agreda', description: 'Apellido' })
   @IsString()
-  @IsNotEmpty({ message: 'Introduce un apellido.' })
+  @IsOptional()
   @MinLength(3, { message: 'El apellido debe tener al menos 3 caracteres.' })
   @MaxLength(28, { message: 'El apellido no debe exceder los 28 caracteres.' })
   @Matches(/^\S.*\S$|^\S$/, { message: 'El apellido no puede tener espacios al inicio o al final.' })
@@ -57,17 +58,17 @@ export class updateUserDataDto {
   @ApiProperty({ example: '20123456789', description: 'CUIL' })
   @IsNumberString({ no_symbols: true }, { message: 'El CUIL debe contener solo números.' })
   @Length(11, 11, { message: 'El CUIL debe tener 11 dígitos.' })
-  @IsNotEmpty({ message: 'Introduce un número de CUIL.' })
+  @IsOptional()
   cuil: string;
 
   @ApiProperty({ example: '1989-05-24', description: 'Fecha de nacimiento' })
   @IsDate({ message: 'Introduce una fecha válida.' })
-  @IsNotEmpty({ message: 'Introduce una fecha de nacimiento.' })
+  @IsOptional()
   @IsAdult({ message: 'Debes tener al menos 18 años para registrarte.' })
   birthday: Date;
 
   @ApiProperty({ example: '1123456789', description: 'Número de teléfono' })
   @IsPhoneNumber('AR', { message: 'Introduce un número de teléfono válido para Argentina.' })
-  @IsNotEmpty({ message: 'Introduce un número de teléfono.' })
+  @IsOptional()
   phone: string;
 }
