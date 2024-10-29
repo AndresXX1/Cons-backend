@@ -27,8 +27,7 @@ export class BranchService {
     branch.schedules_2 = createBranchDto.schedules_2;
     branch.whatsapp = createBranchDto.whatsapp;
     branch.phone = createBranchDto.phone;
-    branch.lat = createBranchDto.lat;
-    branch.lon = createBranchDto.lon;
+    branch.url = createBranchDto.url;
     return await this.bannerRepository.save(branch);
   }
 
@@ -46,8 +45,7 @@ export class BranchService {
     branch.schedules_2 = updateBranchDto.schedules_2;
     branch.whatsapp = updateBranchDto.whatsapp;
     branch.phone = updateBranchDto.phone;
-    branch.lat = updateBranchDto.lat;
-    branch.lon = updateBranchDto.lon;
+    branch.url = updateBranchDto.url;
 
     return await this.bannerRepository.save(branch);
   }

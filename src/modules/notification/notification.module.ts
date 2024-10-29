@@ -7,10 +7,13 @@ import { User } from '@models/User.entity';
 import { AdminModule } from '@modules/admin/admin.module';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { AuthModule } from '@modules/auth/auth.module';
+import { AuthService } from '@modules/auth/auth.service';
+import { UserService } from '@modules/user/user.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Notification, User]), forwardRef(() => AdminModule)],
-  providers: [NotificationService, JwtService, ConfigService],
+  imports: [TypeOrmModule.forFeature([Notification, User]), forwardRef(() => AdminModule), forwardRef(() => AuthModule)],
+  providers: [NotificationService, JwtService, ConfigService, UserService, AuthService],
   controllers: [NotificationController],
   exports: [NotificationService],
 })
