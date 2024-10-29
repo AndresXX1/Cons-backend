@@ -4,6 +4,9 @@ import { CreateNotificationDto } from './dto/create-notification.dto';
 import { META_ROLES } from '@infrastructure/constants';
 import { RoleAdminType } from '@models/Admin.entity';
 import { JwtAuthRolesGuard } from '@modules/auth/guards/jwt-auth-roles.guard';
+import { GetUser } from '@infrastructure/decorators/get-user.decorator';
+import { User } from '@models/User.entity';
+import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 
 @Controller('notifications')
 export class NotificationController {
@@ -38,6 +41,13 @@ export class NotificationController {
   @Get('oldNotifications')
   async getOldNotifications() {
     const result = await this.notificationService.getOldNotifications();
+    return { ok: true, notifications: result };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('appNotification')
+  async appNotifications(@GetUser() user: User) {
+    const result = await this.notificationService.appNotifications(user);
     return { ok: true, notifications: result };
   }
 }

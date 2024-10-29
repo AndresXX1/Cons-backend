@@ -25,8 +25,5 @@ export class Branch extends BaseEntity {
   phone: string;
 
   @Column({ type: 'varchar', length: 255, default: null, nullable: true })
-  lat: number;
-
-  @Column({ type: 'varchar', length: 255, default: null, nullable: true })
-  lon: number;
+  url: string;
 }

@@ -374,6 +374,7 @@ export class UserService {
       const user = await this.userRepository.findOne({
         where: { id: userId },
       });
+      if (!user) throw new NotFoundException('[ user | getSmarterData ]: no se encontró al usuario');
       if (user?.birthday && user?.cuil) {
         let credits = [];
         let offer: any = undefined;
@@ -392,6 +393,8 @@ export class UserService {
 
         const response = await axios.post(url, payload);
         //this.logger.debug(response.data);
+        user.smarter_token = response.data.result.token;
+        await this.userRepository.save(user);
 
         if (response.data.statusCode === 201 && response.data.result.valido) {
           const params = {
@@ -483,6 +486,49 @@ export class UserService {
       }
       return this.userRepository.save(user);
     }
+  }
+
+  async getOffer(userId: number, branchName: string, platform: number) {
+    const userFound = await this.userRepository.findOne({ where: { id: userId } });
+    if (!userFound) throw new NotFoundException('[ user | getOffer ]: no se encontró al usuario');
+    const params2 = {
+      cuil: userFound.cuil,
+      ticket: this.ticket,
+      token: userFound.smarter_token,
+      usuario: branchName,
+      productoId: platform,
+    };
+    let offer: any = undefined;
+    const response3 = await axios.get(`${this.smarterBaseUrl}/External/app_consultacupo`, { params: params2 });
+    if (response3.data.statusCode === 201) {
+      offer = response3.data.result;
+      //this.logger.debug(response3.data);
+    }
+
+    // this.logger.log(
+    //   'RESULT:',
+    //   JSON.stringify(
+    //     {
+    //       info: response.data.result,
+    //       credits: credits,
+    //       offer: offer,
+    //     },
+    //     null,
+    //     2,
+    //   ),
+    // );
+    if (offer) {
+      offer = {
+        resultado: offer.resultado || '',
+        maximoCapital: offer.maximoCapital?.toString() || '',
+        maximoCuota: offer.maximoCuota?.toString() || '',
+        consultaId: offer.consultaId || '',
+      };
+    } else {
+      offer = undefined;
+    }
+
+    return offer;
   }
 
   async getAgeStatistics(): Promise<{
