@@ -377,12 +377,8 @@ export class UserService {
       if (!user) throw new NotFoundException('[ user | getSmarterData ]: no se encontró al usuario');
       if (user?.birthday && user?.cuil) {
         let credits = [];
-        let offer: any = undefined;
-
         const url = `${this.smarterBaseUrl}/External/app_iniciosesion`;
         const url2 = `${this.smarterBaseUrl}/External/app_estadocuenta`;
-        const url3 = `${this.smarterBaseUrl}/External/app_consultacupo`;
-
         const fecha = this.formatDateToISO(user.birthday);
 
         const payload = {
@@ -408,42 +404,7 @@ export class UserService {
             //this.logger.debug(response2.data);
           }
 
-          const params2 = {
-            cuil: user.cuil,
-            ticket: this.ticket,
-            token: response.data.result.token,
-          };
-
-          const response3 = await axios.get(url3, { params: params2 });
-          if (response3.data.statusCode === 201) {
-            offer = response3.data.result;
-            //this.logger.debug(response3.data);
-          }
-
-          // this.logger.log(
-          //   'RESULT:',
-          //   JSON.stringify(
-          //     {
-          //       info: response.data.result,
-          //       credits: credits,
-          //       offer: offer,
-          //     },
-          //     null,
-          //     2,
-          //   ),
-          // );
-          if (offer) {
-            offer = {
-              resultado: offer.resultado || '',
-              maximoCapital: offer.maximoCapital?.toString() || '',
-              maximoCuota: offer.maximoCuota?.toString() || '',
-              consultaId: offer.consultaId || '',
-            };
-          } else {
-            offer = undefined;
-          }
-
-          return { info: response.data.result, credits: credits, offer: offer };
+          return { info: response.data.result, credits: credits };
         } else {
           return { info: undefined, credits: [], offer: undefined };
         }
