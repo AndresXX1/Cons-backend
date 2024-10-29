@@ -47,6 +47,16 @@ export class UserController {
     return { ok: true, user, smarter: smarterData };
   }
 
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Obtiene el estado de credito del usuario' })
+  @ApiBearerAuth()
+  @Get('getOffer/:platformId/:branchName')
+  async getOffer(@GetUser() user: User, @Param() params: { branchName: string; platformId: number }) {
+    const userId = parseInt(`${user.id}`, 10);
+    const smarterData = await this.userService.getOffer(userId, params.branchName, params.platformId);
+    return { ok: true, user, offer: smarterData };
+  }
+
   @UseGuards(JwtAuthRolesGuard)
   @SetMetadata(META_ROLES, [RoleAdminType.SUPER_ADMIN, RoleAdminType.ADMIN])
   @ApiOperation({ summary: 'Obtiene lista de usuarios, solo admin' })

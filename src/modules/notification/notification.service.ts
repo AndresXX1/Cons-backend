@@ -55,6 +55,7 @@ export class NotificationService {
     if (allNotifications.length === 0) throw new NotFoundException('[ Notifications | getAllNotifications ]: No se encontró ninguna notificatión');
     return allNotifications;
   }
+
   async getOldNotifications() {
     const newDate = new Date();
     const timezoneOffsetBuenosAires = -3 * 60 * 60 * 1000;
@@ -62,6 +63,28 @@ export class NotificationService {
     const allNotifications = await this.notificationRepository.find({ where: { scheduledAt: LessThanOrEqual(currentDate) }, order: { scheduledAt: 'DESC' }, take: 5 });
     if (allNotifications.length === 0) throw new NotFoundException('[ Notifications | getAllNotifications ]: No se encontró ninguna notificatión');
     return allNotifications;
+  }
+
+  async appNotifications(user: User) {
+    const newDate = new Date();
+    const timezoneOffsetBuenosAires = -3 * 60 * 60 * 1000;
+    const currentDate = new Date(newDate.getTime() + timezoneOffsetBuenosAires);
+    if (user.create) {
+      const allNotifications = await this.notificationRepository.find({
+        where: [
+          {
+            scheduledAt: MoreThan(user.create),
+          },
+          {
+            scheduledAt: LessThanOrEqual(currentDate),
+          },
+        ],
+        order: { scheduledAt: 'DESC' },
+        take: 10,
+      });
+      if (allNotifications.length === 0) throw new NotFoundException('[ Notifications | getAllNotifications ]: No se encontró ninguna notificatión');
+      return allNotifications;
+    }
   }
 
   async sendPushNotification(notification: Notification) {
