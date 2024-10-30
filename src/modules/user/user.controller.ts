@@ -39,7 +39,6 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Obtiene tu datos de usuario' })
-  @ApiBearerAuth()
   @Get('')
   async getProfile(@GetUser() user: User) {
     const userId = parseInt(`${user.id}`, 10);
@@ -48,8 +47,8 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @SetMetadata(META_ROLES, [RoleAdminType.SUPER_ADMIN, RoleAdminType.ADMIN])
   @ApiOperation({ summary: 'Obtiene el estado de credito del usuario' })
-  @ApiBearerAuth()
   @Get('getOffer/:platformId/:branchName')
   async getOffer(@GetUser() user: User, @Param() params: { branchName: string; platformId: number }) {
     const userId = parseInt(`${user.id}`, 10);
