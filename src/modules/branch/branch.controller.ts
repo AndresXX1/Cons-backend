@@ -14,7 +14,7 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BranchService } from './branch.service';
 import { JwtAuthRolesGuard } from '@modules/auth/guards/jwt-auth-roles.guard';
 import { META_ROLES } from '@infrastructure/constants';
@@ -23,6 +23,9 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import * as uuid from 'uuid';
 import { CreateBranchDto } from './dto/create-branch.dto';
+import { GetUser } from '@infrastructure/decorators/get-user.decorator';
+import { User } from '@models/User.entity';
+import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 
 const allowedFileExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
 
@@ -36,6 +39,16 @@ export class BranchController {
   async getBranches() {
     const branches = await this.branchService.getBranches();
     return { ok: true, branches: branches };
+  }
+
+  //@UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Obtiene una oferta para la persona solicitada' })
+  //@ApiBearerAuth()
+  @Get('getCoupon/:platformId/:branchName')
+  async getCoupon(@GetUser() user: User, @Param('branchName') branchName: string, @Param('platformId') platformId: number) {
+    const userId = parseInt(`${user?.id}`, 10);
+    const smarterData = await this.branchService.getCoupon(userId, branchName, platformId);
+    return { ok: true, user, offer: smarterData };
   }
 
   @UseGuards(JwtAuthRolesGuard)
