@@ -22,11 +22,12 @@ export class BannerService {
     return bannerNotDeleted;
   }
 
-  async create(bannerName: string, type: BannerType): Promise<Banner> {
+  async create(bannerName: string, type: BannerType, bannerRedirect: string): Promise<Banner> {
     const banner = new Banner();
     banner.url = bannerName;
     banner.deleted = false;
     banner.type = type;
+    banner.redirect = bannerRedirect;
 
     await this.bannerRepository.save(banner);
     return banner;
