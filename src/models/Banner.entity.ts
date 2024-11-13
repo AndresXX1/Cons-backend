@@ -17,4 +17,7 @@ export class Banner extends BaseEntity {
 
   @Column({ type: 'enum', enum: BannerType, default: BannerType.HOME })
   type: BannerType;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  redirect: string;
 }

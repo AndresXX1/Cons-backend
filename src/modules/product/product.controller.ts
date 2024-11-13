@@ -1,4 +1,4 @@
-import { Body, Controller, DefaultValuePipe, Get, Param, Post, Put, Query, SetMetadata, UseGuards } from '@nestjs/common';
+import { Body, Controller, DefaultValuePipe, Delete, Get, Param, Post, Put, Query, SetMetadata, UseGuards } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { JwtAuthRolesGuard } from '@modules/auth/guards/jwt-auth-roles.guard';
@@ -58,5 +58,15 @@ export class ProductController {
   async updateProduct(@Param('id') id: number, @Body() updateProductDto: UpdateProductDto) {
     const product = await this.productService.updateProduct(id, updateProductDto);
     return { ok: true, product };
+  }
+
+  @UseGuards(JwtAuthRolesGuard)
+  @SetMetadata(META_ROLES, [RoleAdminType.SUPER_ADMIN, RoleAdminType.ADMIN])
+  @ApiOperation({ summary: 'Elimina un producto existente' })
+  @ApiBearerAuth()
+  @Delete('delete/:id')
+  async deleteProduct(@Param('id') id: number) {
+    await this.productService.deleteProduct(id);
+    return { ok: true, message: `Producto con ID ${id} eliminado` };
   }
 }

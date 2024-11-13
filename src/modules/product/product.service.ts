@@ -48,4 +48,12 @@ export class ProductService {
 
     return await this.productRepository.save(product);
   }
+
+  async deleteProduct(id: number): Promise<void> {
+    const result = await this.productRepository.delete({ id });
+    if (result.affected === 0) {
+      throw new NotFoundException(`Product with ID ${id} not found`);
+    }
+    this.logger.log(`Producto con ID ${id} eliminado`);
+  }
 }
