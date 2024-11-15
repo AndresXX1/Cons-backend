@@ -7,7 +7,7 @@ import { RoleAdminType } from '@models/Admin.entity';
 import { SearchProductDto } from './dto/search-product.dto';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
-import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
+// import { JwtAuthGuard } from '@modules/auth/guards/jwt-auth.guard';
 
 @Controller('product')
 @ApiTags('product')
@@ -31,7 +31,7 @@ export class ProductController {
     return { ok: true, products };
   }
 
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Obtiene todos los productos creados' })
   @ApiBearerAuth()
   @Get('allProducts')
