@@ -33,6 +33,7 @@ export class ProductController {
 
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Obtiene todos los productos creados' })
+  @ApiBearerAuth()
   @Get('allProducts')
   async getAllProducts() {
     const products = await this.productService.getAllProducts();
