@@ -30,6 +30,6 @@ export default (): any => ({
   },
   cuponizate: {
     token: process.env.CUPONIZATE_TOKEN,
-    microsite: process.env.CUPONIZATE_MICROSITE
-  }
+    microsite: process.env.CUPONIZATE_MICROSITE,
+  },
 });
