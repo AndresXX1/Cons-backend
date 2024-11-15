@@ -15,7 +15,7 @@ import {
   Delete,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { diskStorage } from 'multer';
 import * as uuid from 'uuid';
 import { UserService } from './user.service';
