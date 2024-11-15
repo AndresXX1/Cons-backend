@@ -46,6 +46,8 @@ jobs:
             NODEMAILER_USER=${{ secrets.NODEMAILER_USER }}
             NODEMAILER_PASS=${{ secrets.NODEMAILER_PASS }}
             NODEMAILER_FROM=${{ secrets.NODEMAILER_FROM }}
+            CUPONIZATE_TOKEN=${{ secrets.CUPONIZATE_TOKEN }}
+            CUPONIZATE_MICROSITE=${{ secrets.CUPONIZATE_MICROSITE }}
             JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
             JWT_SECRET_KEY_REFRESH=${{ secrets.JWT_SECRET_KEY_REFRESH }}
             FORGET_PASSWORD_TOKEN_SECRET=${{ secrets.FORGET_PASSWORD_TOKEN_SECRET }}
