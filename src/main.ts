@@ -9,14 +9,21 @@ import { IoAdapter } from '@nestjs/platform-socket.io';
 import { winstonLogger } from '@infrastructure/loggers/winston.logger';
 import { DataService } from './scripts/DataService';
 import { HttpExceptionFilter } from '@infrastructure/filters/global-exception.filter';
+import { join } from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
-export const logger = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'production' ? winstonLogger : new Logger('argenpesos-backend');
+export const logger =
+  process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'production'
+    ? winstonLogger
+    : new Logger('argenpesos-backend');
 
 async function bootstrap() {
   pg.defaults.parseInputDatesAsUTC = false;
   pg.types.setTypeParser(1114, (stringValue: string) => new Date(`${stringValue}Z`));
 
-  const app = await NestFactory.create(AppModule);
+  // Especificar NestExpressApplication
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
   app.use(json({ limit: '3mb' }));
   app.use(urlencoded({ extended: true, limit: '3mb' }));
   app.useGlobalPipes(
@@ -43,7 +50,17 @@ async function bootstrap() {
   });
   app.setGlobalPrefix('api');
 
-  const config = new DocumentBuilder().setTitle('Argenpesos API').setDescription('Argenpesos API docuemntation').addBearerAuth().setVersion('1.0').build();
+  // Configuración para servir archivos estáticos
+  app.useStaticAssets(join(__dirname, '..', 'uploads/products'), {
+    prefix: '/images/products', // URL base para las imágenes
+  });
+
+  const config = new DocumentBuilder()
+    .setTitle('Argenpesos API')
+    .setDescription('Argenpesos API documentation')
+    .addBearerAuth()
+    .setVersion('1.0')
+    .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('doc', app, document);
 

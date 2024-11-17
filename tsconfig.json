@@ -25,6 +25,7 @@
       "@commons/*": ["src/commons/*"],
       "@infrastructure/*": ["src/infrastructure/*"],
       "@config": ["src/config"]
-    }
+    },
+    "types": ["node", "pug", "supertest"]  
   }
 }
