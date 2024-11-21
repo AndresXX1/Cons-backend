@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
@@ -77,10 +78,11 @@ export class BannerController {
     @UploadedFile()
     file: Express.Multer.File,
     @Param('type') type: string,
+    @Body('redirect') redirect: string,
   ) {
     if (!file) throw new HttpException('a file is required', HttpStatus.BAD_REQUEST);
     const bannerName = file.filename;
-    const bannerSaved = await this.bannerService.create(bannerName, type as BannerType);
+    const bannerSaved = await this.bannerService.create(bannerName, type as BannerType, redirect);
 
     return { ok: true, banner: bannerSaved };
   }

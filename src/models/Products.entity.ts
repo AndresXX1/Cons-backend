@@ -22,4 +22,7 @@ export class Product {
 
   @Column({ default: false })
   includesShipping: boolean;
+
+  @Column({ default: false })
+  deleted: boolean;
 }

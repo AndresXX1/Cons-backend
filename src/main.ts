@@ -1,7 +1,5 @@
-import './config/dd-tracer';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { urlencoded, json } from 'express';
 import * as pg from 'pg';
@@ -11,6 +9,8 @@ import { DataService } from './scripts/DataService';
 import { HttpExceptionFilter } from '@infrastructure/filters/global-exception.filter';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import  express  from 'express';
 
 export const logger =
   process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'production'
@@ -50,9 +50,8 @@ async function bootstrap() {
   });
   app.setGlobalPrefix('api');
 
-  // Configuración para servir archivos estáticos
   app.useStaticAssets(join(__dirname, '..', 'uploads/products'), {
-    prefix: '/images/products', // URL base para las imágenes
+    prefix: '/images/products',
   });
 
   const config = new DocumentBuilder()
@@ -68,12 +67,6 @@ async function bootstrap() {
   await loadData.loadDataByDefault();
   app.useWebSocketAdapter(new IoAdapter(app));
 
-  // const productService = app.get(ProductService);
-
-  // setInterval(async () => {
-  //   await productService.updateProducts();
-  // }, 10000);
-
-  await app.listen(8001);
+  await app.listen(8001);  // Puerto en el que el servidor escucha
 }
 bootstrap();
