@@ -12,6 +12,7 @@ uploads/banner/*
 uploads/notice/*
 !uploads/notice/index.html
 uploads/branch/*
+uploads/products/*
 !uploads/branch/index.html
 package-lock.json
 # Logs

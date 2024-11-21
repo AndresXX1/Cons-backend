@@ -45,6 +45,10 @@ import { NotificationModule } from '@modules/notification/notification.module';
       rootPath: join(__dirname, '..', '..', 'uploads', 'branch'),
       serveRoot: '/branch',
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'uploads', 'products'),
+      serveRoot: '/images/products',
+    }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
