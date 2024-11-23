@@ -11,7 +11,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import * as path from 'path';
 import * as multer from 'multer';
 import { get } from 'http';
-import {  Res, HttpException, HttpStatus } from '@nestjs/common';
+import { Res, HttpException, HttpStatus } from '@nestjs/common';
 import * as fs from 'fs';
 import { Response } from 'express';
 import { diskStorage } from 'multer';
@@ -21,12 +21,12 @@ const allowedFileExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, './uploads/products');  
+    cb(null, './uploads/products');
   },
   filename: (req, file, cb) => {
     const fileExtension = path.extname(file.originalname);
-    const fileName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${fileExtension}`;
-    cb(null, fileName);  
+    const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${fileExtension}`;
+    cb(null, fileName);
   },
 });
 
@@ -36,7 +36,7 @@ export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @ApiOperation({ summary: 'Obtiene solo productos visibles en el ecommerce, buscando y/o filtrando.' })
-  @Get() 
+  @Get()
   async getProducts(@Body() searchProductDto: SearchProductDto, @Query('page', new DefaultValuePipe(1)) page: number, @Query('limit', new DefaultValuePipe(12)) limit: number) {
     const products = await this.productService.searchProductsEcommerce(searchProductDto, page, limit);
     return { ok: true, products };
@@ -86,16 +86,12 @@ export class ProductController {
       }),
     }),
   )
-  async createProduct(
-    @Body() createProductDto: CreateProductDto,
-    @UploadedFile() file: Express.Multer.File
-  ) {
+  async createProduct(@Body() createProductDto: CreateProductDto, @UploadedFile() file: Express.Multer.File) {
     if (!file) throw new HttpException('An image file is required', HttpStatus.BAD_REQUEST);
     const imageUrl = `/images/products/${file.filename}`;
     const product = await this.productService.createProduct(createProductDto, imageUrl);
     return { ok: true, product };
   }
-
 
   @UseGuards(JwtAuthRolesGuard)
   @SetMetadata(META_ROLES, [RoleAdminType.SUPER_ADMIN, RoleAdminType.ADMIN])
@@ -121,11 +117,7 @@ export class ProductController {
       }),
     }),
   )
-  async updateProduct(
-    @Param('id') id: number,
-    @Body() updateProductDto: UpdateProductDto,
-    @UploadedFile() file: Express.Multer.File
-  ) {
+  async updateProduct(@Param('id') id: number, @Body() updateProductDto: UpdateProductDto, @UploadedFile() file: Express.Multer.File) {
     let imageUrl: string | undefined;
     if (file) {
       imageUrl = `/images/products/${file.filename}`;
@@ -134,16 +126,15 @@ export class ProductController {
     return { ok: true, product };
   }
 
-
   @Get('images/:imageName')
   async getProductImage(@Param('imageName') imageName: string, @Res() res: Response) {
     const imagePath = path.join(__dirname, '..', 'uploads/products', imageName);
-  
+
     // Verifica si el archivo existe
     if (!fs.existsSync(imagePath)) {
       throw new HttpException('Imagen no encontrada', HttpStatus.NOT_FOUND);
     }
-  
+
     // Si el archivo existe, lo enviamos
     res.sendFile(imagePath);
   }
@@ -159,6 +150,4 @@ export class ProductController {
       throw new HttpException('Failed to delete product', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
-
 }

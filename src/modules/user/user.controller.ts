@@ -177,13 +177,24 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Eliminar usuario' })
+  @Delete('user')
+  async deleteUser(@GetUser() user: User) {
+    const userId = parseInt(`${user.id}`, 10);
+
+    await this.userService.deleteUser(userId);
+
+    return { ok: true, message: 'Usuario eliminado correctamente' };
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get(':userId2/search')
   @ApiOperation({ summary: 'Busqueda de usuario por id' })
   async searchUserById(@Param('userId2') userId2: number) {
     return this.userService.findById(Number(userId2));
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthRolesGuard)
   @Put(':id')
   async updateUserData(@Param('id') userId: number, @Body() userData: updateUserDataDto) {
     const result = await this.userService.updateUserData(userId, userData);
