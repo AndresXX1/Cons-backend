@@ -51,17 +51,17 @@ export class ProductService {
     if (!product) {
       throw new NotFoundException(`Product with ID ${id} not found`);
     }
-  
+
     Object.assign(product, updateProductDto);
     if (imageUrl) {
       product.image = imageUrl;
     }
-  
+
     await this.productRepository.save(product);
     return product;
   }
 
-async deleteProduct(id: number): Promise<{ ok: boolean }> {
+  async deleteProduct(id: number): Promise<{ ok: boolean }> {
     try {
       const product = await this.productRepository.findOne({ where: { id } });
       if (!product) {
