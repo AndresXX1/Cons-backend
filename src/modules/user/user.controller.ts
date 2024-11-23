@@ -183,7 +183,7 @@ export class UserController {
     return this.userService.findById(Number(userId2));
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthRolesGuard)
   @Put(':id')
   async updateUserData(@Param('id') userId: number, @Body() userData: updateUserDataDto) {
     const result = await this.userService.updateUserData(userId, userData);
