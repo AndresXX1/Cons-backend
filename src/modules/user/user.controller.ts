@@ -197,7 +197,9 @@ export class UserController {
   @UseGuards(JwtAuthRolesGuard)
   @Put(':id')
   async updateUserData(@Param('id') userId: number, @Body() userData: updateUserDataDto) {
-    const result = await this.userService.updateUserData(userId, userData);
-    return { ok: true, updatedUser: result };
+    const result = await this.userService.updateUser(userData);  // Esto es correcto si el método updateUser devuelve un objeto con 'updatedUser'
+  
+    // Devolvemos el objeto esperado
+    return { ok: result.ok, updatedUser: result.updatedUser };  // `result` tiene la propiedad `updatedUser`
   }
 }

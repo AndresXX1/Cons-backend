@@ -256,27 +256,30 @@ export class UserService {
     return userSaved;
   }
 
-  async updateUser(user: Partial<User>) {
+  async updateUser(user: Partial<User>): Promise<{ ok: boolean, message: string, updatedUser: User }> {
     const dbUser = await this.userRepository.findOne({
       where: {
         email: user.email,
       },
     });
-
-    if (!dbUser) throw new NotFoundException('Correo electrónico no registado');
+  
+    if (!dbUser) throw new NotFoundException('Correo electrónico no registrado');
+  
     for (const property in user) {
       if (property === 'password') {
         const salt = await bcrypt.genSalt();
         const hashedPassword = await bcrypt.hash(user.password, salt);
         dbUser.password = hashedPassword;
-      } else if (user[property]) {
+      } else if (user[property] !== undefined && user[property] !== null) {
         dbUser[property] = user[property];
       }
     }
+  
     await this.userRepository.update(dbUser.id as number, dbUser);
-
-    return { ok: true, message: 'User updated' };
+  
+    return { ok: true, message: 'User updated', updatedUser: dbUser }; // Tipo correcto
   }
+
 
   async findUserDataById(userId: number): Promise<User | null> {
     const user = await this.findById(userId);
