@@ -11,6 +11,7 @@ import {
   ValidationArguments,
   ValidationOptions,
   IsOptional,
+  IsNumber,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { subYears } from 'date-fns';
@@ -70,4 +71,15 @@ export class updateUserDataDto {
   @IsPhoneNumber('AR', { message: 'Introduce un número de teléfono válido para Argentina.' })
   @IsOptional()
   phone: string;
+
+  @ApiProperty({ example: 100, description: 'Puntos acumulados por el usuario' })
+  @IsNumber()
+  @IsOptional()
+  points: number;
+
+  @ApiProperty({ example: 'M', description: 'Género del usuario' })
+  @IsString()
+  @IsOptional()
+  gender: string;
 }
+
