@@ -80,7 +80,7 @@ export class UserController {
   @UseInterceptors(
     FileInterceptor('file', {
       fileFilter(req, file, callback) {
-        if (!allowedFileExtensions.includes(file.originalname.split('.').pop() ?? '')) {
+        if (!allowedFileExtensions.includes(file.mimetype.split('/').pop() ?? '')) {
           return callback(new UnsupportedMediaTypeException(), false);
         }
         callback(null, true);
@@ -89,7 +89,7 @@ export class UserController {
         destination: './uploads/avatar/',
         filename: (req, file, callback) => {
           const uniqueSuffix = uuid.v4();
-          const extension = file.originalname.split('.').pop();
+          const extension = file.mimetype.split('/').pop();
           const uniqueFilename = `${uniqueSuffix}.${extension}`;
           callback(null, uniqueFilename);
         },
