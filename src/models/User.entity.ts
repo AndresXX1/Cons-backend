@@ -61,6 +61,9 @@ export class User extends BaseEntity {
   @Column({ type: 'date', nullable: true, default: null })
   birthday: Date;
 
+  @Column({ type: 'boolean', default: false })
+  isBlocked: boolean;
+
   // -------- Relations ---------
   @OneToMany(() => Session, (session) => session.user)
   sessions: Session[];

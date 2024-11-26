@@ -377,6 +377,90 @@ export class UserService {
     await this.userRepository.save(user);
     return user;
   }
+
+  async createAddressAdmin(userId: number, address: AddressDto) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+  
+    if (!user) throw new NotFoundException('El usuario no existe.');
+  
+    user.address.push(address);
+  
+    await this.userRepository.save(user);
+  
+    return user;
+  }
+
+  
+  async editAddressAdmin(userId: number, addressIndex: number, updateAddress: AddressDto) {
+    const user = await this.userRepository.findOneOrFail({
+      where: { id: userId },
+      relations: ['address'], 
+    });
+  
+    if (addressIndex >= user.address.length) {
+      throw new NotFoundException('La dirección no existe.');
+    }
+      user.address[addressIndex] = updateAddress;
+      await this.userRepository.save(user);
+  
+    return user;
+  }
+  
+
+  
+  async deleteAddressAdmin(userId: number, addressIndex: number) {
+    const user = await this.userRepository.findOneOrFail({
+      where: { id: userId },
+      relations: ['address'], 
+    });
+      if (addressIndex >= user.address.length) {
+      throw new NotFoundException('La dirección no existe.');
+    }
+      user.address.splice(addressIndex, 1);
+      await this.userRepository.save(user);
+  
+    return user;
+  }
+  
+  
+  async getUserAddressesAdmin(userId: number) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+  
+    if (!user) throw new NotFoundException('El usuario no existe.');
+  
+    return user.address;
+  }
+
+   // Bloquear un usuario
+   async blockUser(userId: number): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!user) throw new NotFoundException('El usuario no existe.');
+
+    // cambia el estado de isBlocked a true
+    user.isBlocked = true;
+    await this.userRepository.save(user);
+
+    return user;
+  }
+
+  // desbloquear un usuario
+  async unblockUser(userId: number): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!user) throw new NotFoundException('El usuario no existe.');
+
+    // cambia el estado de isBlocked a false
+    user.isBlocked = false;
+    await this.userRepository.save(user);
+
+    return user;
+  }
+  
   /*20202052054	1968-04-14 
 27224297012	1973-01-07 
 27316802600	1982-06-06
