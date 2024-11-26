@@ -146,7 +146,7 @@ export class UserController {
     return { ok: true, user: userResponse };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthRolesGuard)
   @ApiOperation({ summary: 'Subir dirección' })
   @Post('address')
   async createAddress(@GetUser() user: User, @Body() address: AddressDto) {
@@ -156,7 +156,7 @@ export class UserController {
     return { ok: true, user: userResponse };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthRolesGuard)
   @ApiOperation({ summary: 'Editar dirección' })
   @Put('address/:index')
   async editAddress(@GetUser() user: User, @Body() updatedAddress: AddressDto, @Param('index') index: number) {
@@ -166,13 +166,77 @@ export class UserController {
     return { ok: true, user: userResponse };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthRolesGuard)
   @ApiOperation({ summary: 'Eliminar dirección' })
   @Delete('address/:index')
   async deleteAddress(@GetUser() user: User, @Param('index') index: number) {
     const userId = parseInt(`${user.id}`, 10);
     const userResponse = await this.userService.deleteAddress(userId, index);
 
+    return { ok: true, user: userResponse };
+  }
+
+  @UseGuards(JwtAuthRolesGuard)
+  @ApiOperation({ summary: 'Subir dirección para un usuario específico' })
+  @Post(':userId/address')  
+  async createAddressAdmin(
+    @Body() address: AddressDto,
+    @Param('userId') userId: number, 
+  ) {
+    const userResponse = await this.userService.createAddressAdmin(userId, address);
+    return { ok: true, user: userResponse };
+  }
+
+  @UseGuards(JwtAuthRolesGuard)
+  @ApiOperation({ summary: 'Editar dirección de un usuario específico' })
+  @Put(':userId/address/:index')  
+  async editAddressAdmin(
+    @Body() updatedAddress: AddressDto,
+    @Param('userId') userId: number,  
+    @Param('index') index: number,   
+  ) {
+    const userResponse = await this.userService.editAddress(userId, index, updatedAddress);
+    return { ok: true, user: userResponse };
+  }
+
+  @UseGuards(JwtAuthRolesGuard)
+  @ApiOperation({ summary: 'Eliminar dirección de un usuario específico' })
+  @Delete(':userId/address/:index')  
+  async deleteAddressAdmin(
+    @Param('userId') userId: number,  
+    @Param('index') index: number,    
+  ) {
+    const userResponse = await this.userService.deleteAddress(userId, index);
+    return { ok: true, user: userResponse };
+  }
+
+
+  @UseGuards(JwtAuthRolesGuard)
+@SetMetadata(META_ROLES, [RoleAdminType.SUPER_ADMIN, RoleAdminType.ADMIN])
+@ApiOperation({ summary: 'Obtiene todas las direcciones de un usuario específico - Solo Admin' })
+@Get(':userId/addresses')
+async getUserAddressesAdmin(@Param('userId') userId: number) {
+  const addresses = await this.userService.getUserAddressesAdmin(userId);
+  return { ok: true, addresses };
+}
+
+  // Bloquear un usuario
+  @UseGuards(JwtAuthRolesGuard)
+  @SetMetadata(META_ROLES, [RoleAdminType.SUPER_ADMIN, RoleAdminType.ADMIN])
+  @ApiOperation({ summary: 'Bloquear un usuario' })
+  @Put(':userId/block')  
+  async blockUser(@Param('userId') userId: number) {
+    const userResponse = await this.userService.blockUser(userId);
+    return { ok: true, user: userResponse };
+  }
+
+  // Desbloquear un usuario
+  @UseGuards(JwtAuthRolesGuard)
+  @SetMetadata(META_ROLES, [RoleAdminType.SUPER_ADMIN, RoleAdminType.ADMIN])
+  @ApiOperation({ summary: 'Desbloquear un usuario' })
+  @Put(':userId/unblock')  
+  async unblockUser(@Param('userId') userId: number) {
+    const userResponse = await this.userService.unblockUser(userId);
     return { ok: true, user: userResponse };
   }
 
