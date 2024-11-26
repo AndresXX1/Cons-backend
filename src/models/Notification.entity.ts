@@ -18,4 +18,7 @@ export class Notification extends BaseEntity {
 
   @Column({ default: true })
   isPush: boolean;
+
+  @Column()
+  redirect: string;
 }
