@@ -101,8 +101,21 @@ export class NotificationService {
           {
             to: user.notification_token,
             title: notification.title,
+            body: notification.message || '',
+            data: { action: 'reload', image: notification.image },
             sound: 'default',
-            data: { action: 'reload' },
+
+            priority: 'high',
+            android: {
+              image: notification.image, // URL de la imagen para Android
+            },
+            ios: {
+              attachments: [
+                {
+                  url: notification.image, // URL de la imagen para iOS
+                },
+              ],
+            },
           },
           {
             headers: {
