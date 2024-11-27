@@ -50,7 +50,7 @@ export class NotificationController {
     const result = await this.notificationService.appNotifications(user);
     return { ok: true, notifications: result };
   }
-  
+
   @UseGuards(JwtAuthRolesGuard)
   @SetMetadata(META_ROLES, [RoleAdminType.ADMIN, RoleAdminType.SUPER_ADMIN])
   @Delete(':id')
@@ -62,12 +62,8 @@ export class NotificationController {
   @UseGuards(JwtAuthRolesGuard)
   @SetMetadata(META_ROLES, [RoleAdminType.ADMIN, RoleAdminType.SUPER_ADMIN])
   @Put(':id')
-  async updateNotification(
-    @Param('id') id: number,
-    @Body() updateNotificationDto: CreateNotificationDto,
-  ) {
+  async updateNotification(@Param('id') id: number, @Body() updateNotificationDto: CreateNotificationDto) {
     const result = await this.notificationService.updateNotification(id, updateNotificationDto);
     return { ok: true, result };
   }
 }
-

@@ -9,26 +9,11 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import * as path from 'path';
-import * as multer from 'multer';
-import { get } from 'http';
 import { Res, HttpException, HttpStatus } from '@nestjs/common';
 import * as fs from 'fs';
 import { Response } from 'express';
 import { diskStorage } from 'multer';
-
-const UPLOAD_DIR = './uploads/products';
 const allowedFileExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, './uploads/products');
-  },
-  filename: (req, file, cb) => {
-    const fileExtension = path.extname(file.originalname);
-    const fileName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${fileExtension}`;
-    cb(null, fileName);
-  },
-});
 
 @Controller('product')
 @ApiTags('product')
@@ -42,8 +27,6 @@ export class ProductController {
     return { ok: true, products };
   }
 
-  @UseGuards(JwtAuthRolesGuard)
-  @SetMetadata(META_ROLES, [RoleAdminType.SUPER_ADMIN, RoleAdminType.ADMIN])
   @ApiOperation({ summary: 'Obtiene todos los productos del ecommerce' })
   @ApiBearerAuth()
   @Get('all')
@@ -52,8 +35,6 @@ export class ProductController {
     return { ok: true, products };
   }
 
-  @UseGuards(JwtAuthRolesGuard)
-  @SetMetadata(META_ROLES, [RoleAdminType.SUPER_ADMIN, RoleAdminType.ADMIN])
   @ApiOperation({ summary: 'Obtiene todos los productos creados' })
   @ApiBearerAuth()
   @Get('allProducts')
