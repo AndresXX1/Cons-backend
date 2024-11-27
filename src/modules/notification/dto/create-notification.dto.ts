@@ -1,4 +1,4 @@
-import { IsString, IsDate, IsBoolean, IsNotEmpty, isString, isNotEmpty, IsOptional } from 'class-validator';
+import { IsString, IsDate, IsBoolean, IsNotEmpty, isString, isNotEmpty, IsOptional, IsNumber } from 'class-validator';
 
 export class CreateNotificationDto {
   @IsString()
@@ -22,5 +22,8 @@ export class CreateNotificationDto {
 
   @IsBoolean()
   isPush: boolean;
+
+  @IsNumber()
+  id?: number; 
 
 }
