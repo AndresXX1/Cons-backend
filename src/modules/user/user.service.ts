@@ -8,8 +8,12 @@ import { ConfigService } from '@nestjs/config';
 import { UpdateFirstDataDto } from './dto/first-data.dto';
 import { UpdateSecondDataDto } from './dto/second-data.dto';
 import axios from 'axios';
+import * as uuid from 'uuid';
+import * as path from 'path';
+import * as fs from 'fs';
 import { AddressDto } from './dto/address.dto';
 import { updateUserDataDto } from './dto/update-user-data.dto';
+import { NewImageDto } from './dto/new-image.dto';
 
 @Injectable()
 export class UserService {
@@ -161,10 +165,27 @@ export class UserService {
     return this.userRepository.save(user);
   }
 
-  async changeAvatar(userId: number, avatar: string): Promise<User> {
-    const user = await this.findById(userId);
-    user.avatar = avatar;
-    return this.userRepository.save(user);
+  async changeAvatar(newImage: NewImageDto, userId: number): Promise<User> {
+    const baseFolderPath = path.join(process.cwd(), 'uploads', 'avatar');
+
+    const decodedImage = Buffer.from(newImage.base64, 'base64');
+
+    if (!fs.existsSync(baseFolderPath)) {
+      fs.mkdirSync(baseFolderPath, { recursive: true });
+    }
+
+    const currentDate = new Date().toISOString().replace(/:/g, '-').replace(/\./g, '-');
+    const uniqueSuffix = uuid.v4();
+    const uniqueFileName = `${uniqueSuffix}_${currentDate}.${newImage.filename.split('.').pop()}`;
+    const filePath = path.join(baseFolderPath, uniqueFileName);
+
+    fs.writeFileSync(filePath, decodedImage);
+
+    const foudendUser = await this.userRepository.findOne({ where: { id: userId } });
+    if (!foudendUser) throw new NotFoundException('[ user | changeAvatar ]: No se pudo encontrar al usuario');
+    foudendUser.avatar = uniqueFileName;
+    const savedUser = await this.userRepository.save(foudendUser);
+    return savedUser;
   }
 
   async createWithGoogle(email: string): Promise<User> {
