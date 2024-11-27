@@ -1,23 +1,5 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Put,
-  UploadedFile,
-  UseInterceptors,
-  UseGuards,
-  HttpException,
-  HttpStatus,
-  UnsupportedMediaTypeException,
-  Post,
-  Param,
-  SetMetadata,
-  Delete,
-} from '@nestjs/common';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { Body, Controller, Get, Put, UseGuards, Post, Param, SetMetadata, Delete, UnsupportedMediaTypeException } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
-import { diskStorage } from 'multer';
-import * as uuid from 'uuid';
 import { UserService } from './user.service';
 import { GetUser } from '@infrastructure/decorators/get-user.decorator';
 import { User } from '@models/User.entity';
@@ -30,6 +12,7 @@ import { UpdateFirstDataDto } from './dto/first-data.dto';
 import { UpdateSecondDataDto } from './dto/second-data.dto';
 import { AddressDto } from './dto/address.dto';
 import { updateUserDataDto } from './dto/update-user-data.dto';
+import { NewImageDto } from './dto/new-image.dto';
 const allowedFileExtensions = ['png', 'jpg', 'jpeg', 'gif', 'webp'];
 
 @Controller('user')
@@ -77,35 +60,12 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Put('avatar')
   @ApiOperation({ summary: 'Edita tu avatar de usuario' })
-  @UseInterceptors(
-    FileInterceptor('file', {
-      fileFilter(req, file, callback) {
-        if (!allowedFileExtensions.includes(file.mimetype.split('/').pop() ?? '')) {
-          return callback(new UnsupportedMediaTypeException(), false);
-        }
-        callback(null, true);
-      },
-      storage: diskStorage({
-        destination: './uploads/avatar/',
-        filename: (req, file, callback) => {
-          const uniqueSuffix = uuid.v4();
-          const extension = file.mimetype.split('/').pop();
-          const uniqueFilename = `${uniqueSuffix}.${extension}`;
-          callback(null, uniqueFilename);
-        },
-      }),
-    }),
-  )
-  async uploadFile(
-    @UploadedFile()
-    file: Express.Multer.File,
-    @GetUser() user: User,
-  ) {
-    if (!file) throw new HttpException('a file is required', HttpStatus.BAD_REQUEST);
-
+  async uploadFile(@GetUser() user: User, @Body() newImage: NewImageDto) {
+    if (!allowedFileExtensions.includes(newImage.filename.split('.').pop() ?? '')) {
+      throw new UnsupportedMediaTypeException();
+    }
     const userId = parseInt(`${user.id}`, 10);
-    const avatar = file.filename;
-    const usersaved = await this.userService.changeAvatar(userId, avatar);
+    const usersaved = await this.userService.changeAvatar(newImage, userId);
 
     return { ok: true, user: usersaved };
   }
