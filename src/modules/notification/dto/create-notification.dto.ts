@@ -1,4 +1,4 @@
-import { IsString, IsDate, IsBoolean, IsNotEmpty, isString, isNotEmpty, IsOptional } from 'class-validator';
+import { IsString, IsDate, IsBoolean, IsNotEmpty, IsOptional } from 'class-validator';
 
 export class CreateNotificationDto {
   @IsString()
@@ -8,7 +8,7 @@ export class CreateNotificationDto {
   @IsString()
   @IsNotEmpty({ message: 'Introduce un mensaje ' })
   message: string;
-  
+
   @IsString()
   @IsOptional()
   redirect: string;
@@ -23,4 +23,7 @@ export class CreateNotificationDto {
   @IsBoolean()
   isPush: boolean;
 
+  @IsString()
+  @IsOptional()
+  image: string;
 }

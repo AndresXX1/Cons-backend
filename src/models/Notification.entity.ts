@@ -19,6 +19,9 @@ export class Notification extends BaseEntity {
   @Column({ default: true })
   isPush: boolean;
 
-  @Column()
+  @Column({ nullable: false })
   redirect: string;
+
+  @Column({ nullable: true })
+  image?: string;
 }
