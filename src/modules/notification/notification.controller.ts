@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, SetMetadata, Get } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, SetMetadata, Get, Delete, Param, Put } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { CreateNotificationDto } from './dto/create-notification.dto';
 import { META_ROLES } from '@infrastructure/constants';
@@ -50,4 +50,24 @@ export class NotificationController {
     const result = await this.notificationService.appNotifications(user);
     return { ok: true, notifications: result };
   }
+  
+  @UseGuards(JwtAuthRolesGuard)
+  @SetMetadata(META_ROLES, [RoleAdminType.ADMIN, RoleAdminType.SUPER_ADMIN])
+  @Delete(':id')
+  async deleteNotification(@Param('id') id: number) {
+    const result = await this.notificationService.deleteNotification(id);
+    return { ok: true, message: result };
+  }
+
+  @UseGuards(JwtAuthRolesGuard)
+  @SetMetadata(META_ROLES, [RoleAdminType.ADMIN, RoleAdminType.SUPER_ADMIN])
+  @Put(':id')
+  async updateNotification(
+    @Param('id') id: number,
+    @Body() updateNotificationDto: CreateNotificationDto,
+  ) {
+    const result = await this.notificationService.updateNotification(id, updateNotificationDto);
+    return { ok: true, result };
+  }
 }
+

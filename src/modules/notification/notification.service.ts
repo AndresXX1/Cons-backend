@@ -119,4 +119,29 @@ export class NotificationService {
       }
     });
   }
+  async deleteNotification(id: number) {
+    const notification = await this.notificationRepository.findOne({ where: { id } });
+
+    if (!notification) {
+        throw new NotFoundException('La notificación no existe');
+    } 
+
+    await this.notificationRepository.remove(notification);
+    return `Notificación con ID ${id} eliminada correctamente`;
 }
+
+async updateNotification(id: number, updateNotificationDto: CreateNotificationDto) {
+  const notification = await this.notificationRepository.findOne({ where: { id } });
+
+  if (!notification) {
+    throw new NotFoundException('La notificación no existe');
+  }
+
+  // Actualiza los campos de la notificación
+  Object.assign(notification, updateNotificationDto);
+  return await this.notificationRepository.save(notification);
+}
+
+}
+
+
