@@ -298,7 +298,32 @@ export class UserService {
   
     await this.userRepository.update(dbUser.id as number, dbUser);
   
-    return { ok: true, message: 'User updated', updatedUser: dbUser }; // Tipo correcto
+    return { ok: true, message: 'User updated', updatedUser: dbUser }; 
+  }
+
+
+  async updateUserAdmin(userData: Partial<User>): Promise<{ ok: boolean, message: string, updatedUser: User }> {
+    const dbUser = await this.userRepository.findOne({
+      where: {
+        id: userData.id,
+      },
+    });
+
+    if (!dbUser) throw new NotFoundException('Usuario no encontrado');
+
+    for (const property in userData) {
+      if (property === 'password') {
+        const salt = await bcrypt.genSalt();
+        const hashedPassword = await bcrypt.hash(userData.password, salt);
+        dbUser.password = hashedPassword;
+      } else if (userData[property] !== undefined && userData[property] !== null) {
+        dbUser[property] = userData[property];
+      }
+    }
+
+    await this.userRepository.save(dbUser);
+
+    return { ok: true, message: 'Usuario actualizado', updatedUser: dbUser };
   }
 
 

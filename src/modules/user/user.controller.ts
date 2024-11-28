@@ -221,9 +221,15 @@ async getUserAddressesAdmin(@Param('userId') userId: number) {
   @UseGuards(JwtAuthRolesGuard)
   @Put(':id')
   async updateUserData(@Param('id') userId: number, @Body() userData: updateUserDataDto) {
-    const result = await this.userService.updateUser(userData);  // Esto es correcto si el método updateUser devuelve un objeto con 'updatedUser'
-  
-    // Devolvemos el objeto esperado
-    return { ok: result.ok, updatedUser: result.updatedUser };  // `result` tiene la propiedad `updatedUser`
+    const result = await this.userService.updateUser(userData); 
+    return { ok: result.ok, updatedUser: result.updatedUser };  
+  }
+
+  @UseGuards(JwtAuthRolesGuard)
+  @Put('update/:id')
+  async updateUserDataAdmin(@Param('id') userId: number, @Body() userData: updateUserDataDto) {
+    const result = await this.userService.updateUserAdmin({ id: userId, ...userData });
+    return result;
   }
 }
+
