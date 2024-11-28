@@ -277,15 +277,15 @@ export class UserService {
     return userSaved;
   }
 
-  async updateUser(user: Partial<User>): Promise<{ ok: boolean, message: string, updatedUser: User }> {
+  async updateUser(user: Partial<User>): Promise<{ ok: boolean; message: string; updatedUser: User }> {
     const dbUser = await this.userRepository.findOne({
       where: {
         email: user.email,
       },
     });
-  
+
     if (!dbUser) throw new NotFoundException('Correo electrónico no registrado');
-  
+
     for (const property in user) {
       if (property === 'password') {
         const salt = await bcrypt.genSalt();
@@ -295,8 +295,9 @@ export class UserService {
         dbUser[property] = user[property];
       }
     }
-  
+
     await this.userRepository.update(dbUser.id as number, dbUser);
+
   
     return { ok: true, message: 'User updated', updatedUser: dbUser }; 
   }
@@ -324,8 +325,8 @@ export class UserService {
     await this.userRepository.save(dbUser);
 
     return { ok: true, message: 'Usuario actualizado', updatedUser: dbUser };
-  }
 
+  }
 
   async findUserDataById(userId: number): Promise<User | null> {
     const user = await this.findById(userId);
@@ -428,61 +429,57 @@ export class UserService {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
-  
+
     if (!user) throw new NotFoundException('El usuario no existe.');
-  
+
     user.address.push(address);
-  
+
     await this.userRepository.save(user);
-  
+
     return user;
   }
 
-  
   async editAddressAdmin(userId: number, addressIndex: number, updateAddress: AddressDto) {
     const user = await this.userRepository.findOneOrFail({
       where: { id: userId },
-      relations: ['address'], 
+      relations: ['address'],
     });
-  
+
     if (addressIndex >= user.address.length) {
       throw new NotFoundException('La dirección no existe.');
     }
-      user.address[addressIndex] = updateAddress;
-      await this.userRepository.save(user);
-  
+    user.address[addressIndex] = updateAddress;
+    await this.userRepository.save(user);
+
     return user;
   }
-  
 
-  
   async deleteAddressAdmin(userId: number, addressIndex: number) {
     const user = await this.userRepository.findOneOrFail({
       where: { id: userId },
-      relations: ['address'], 
+      relations: ['address'],
     });
-      if (addressIndex >= user.address.length) {
+    if (addressIndex >= user.address.length) {
       throw new NotFoundException('La dirección no existe.');
     }
-      user.address.splice(addressIndex, 1);
-      await this.userRepository.save(user);
-  
+    user.address.splice(addressIndex, 1);
+    await this.userRepository.save(user);
+
     return user;
   }
-  
-  
+
   async getUserAddressesAdmin(userId: number) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
-  
+
     if (!user) throw new NotFoundException('El usuario no existe.');
-  
+
     return user.address;
   }
 
-   // Bloquear un usuario
-   async blockUser(userId: number): Promise<User> {
+  // Bloquear un usuario
+  async blockUser(userId: number): Promise<User> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
 
     if (!user) throw new NotFoundException('El usuario no existe.');
@@ -506,7 +503,7 @@ export class UserService {
 
     return user;
   }
-  
+
   /*20202052054	1968-04-14 
 27224297012	1973-01-07 
 27316802600	1982-06-06
