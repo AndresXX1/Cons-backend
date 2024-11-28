@@ -23,6 +23,9 @@ export class Notification {
   @Column({ default: true })
   isPush: boolean;
 
-  @Column()
+  @Column({ nullable: false })
   redirect: string;
+
+  @Column({ nullable: true })
+  image?: string;
 }

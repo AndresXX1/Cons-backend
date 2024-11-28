@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { LessThanOrEqual, MoreThan, Repository } from 'typeorm';
+import { Between, LessThanOrEqual, MoreThan, Repository } from 'typeorm';
 import { Notification } from '@models/Notification.entity';
 import * as moment from 'moment';
 import { CreateNotificationDto } from './dto/create-notification.dto';
@@ -69,20 +69,20 @@ export class NotificationService {
     const newDate = new Date();
     const timezoneOffsetBuenosAires = -3 * 60 * 60 * 1000;
     const currentDate = new Date(newDate.getTime() + timezoneOffsetBuenosAires);
+
     if (user.create) {
       const allNotifications = await this.notificationRepository.find({
-        where: [
-          {
-            scheduledAt: MoreThan(user.create),
-          },
-          {
-            scheduledAt: LessThanOrEqual(currentDate),
-          },
-        ],
+        where: {
+          scheduledAt: Between(user.create, currentDate),
+        },
         order: { scheduledAt: 'DESC' },
         take: 10,
       });
-      if (allNotifications.length === 0) throw new NotFoundException('[ Notifications | getAllNotifications ]: No se encontró ninguna notificatión');
+
+      if (allNotifications.length === 0) {
+        throw new NotFoundException('[ Notifications | getAllNotifications ]: No se encontró ninguna notificatión');
+      }
+
       return allNotifications;
     }
   }
@@ -101,8 +101,21 @@ export class NotificationService {
           {
             to: user.notification_token,
             title: notification.title,
+            body: notification.message || '',
+            data: { action: 'reload', image: notification.image },
             sound: 'default',
-            data: { action: 'reload' },
+
+            priority: 'high',
+            android: {
+              image: notification.image, // URL de la imagen para Android
+            },
+            ios: {
+              attachments: [
+                {
+                  url: notification.image, // URL de la imagen para iOS
+                },
+              ],
+            },
           },
           {
             headers: {
@@ -123,25 +136,22 @@ export class NotificationService {
     const notification = await this.notificationRepository.findOne({ where: { id } });
 
     if (!notification) {
-        throw new NotFoundException('La notificación no existe');
-    } 
+      throw new NotFoundException('La notificación no existe');
+    }
 
     await this.notificationRepository.remove(notification);
     return `Notificación con ID ${id} eliminada correctamente`;
-}
-
-async updateNotification(id: number, updateNotificationDto: CreateNotificationDto) {
-  const notification = await this.notificationRepository.findOne({ where: { id } });
-
-  if (!notification) {
-    throw new NotFoundException('La notificación no existe');
   }
 
-  // Actualiza los campos de la notificación
-  Object.assign(notification, updateNotificationDto);
-  return await this.notificationRepository.save(notification);
+  async updateNotification(id: number, updateNotificationDto: CreateNotificationDto) {
+    const notification = await this.notificationRepository.findOne({ where: { id } });
+
+    if (!notification) {
+      throw new NotFoundException('La notificación no existe');
+    }
+
+    // Actualiza los campos de la notificación
+    Object.assign(notification, updateNotificationDto);
+    return await this.notificationRepository.save(notification);
+  }
 }
-
-}
-
-
