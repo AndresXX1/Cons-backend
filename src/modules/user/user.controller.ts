@@ -218,13 +218,15 @@ async getUserAddressesAdmin(@Param('userId') userId: number) {
     return this.userService.findById(Number(userId2));
   }
 
+  @UseGuards(JwtAuthGuard)
   @UseGuards(JwtAuthRolesGuard)
   @Put(':id')
   async updateUserData(@Param('id') userId: number, @Body() userData: updateUserDataDto) {
     const result = await this.userService.updateUser(userData); 
     return { ok: result.ok, updatedUser: result.updatedUser };  
   }
-
+  
+  @UseGuards(JwtAuthGuard)
   @UseGuards(JwtAuthRolesGuard)
   @Put('update/:id')
   async updateUserDataAdmin(@Param('id') userId: number, @Body() userData: updateUserDataDto) {

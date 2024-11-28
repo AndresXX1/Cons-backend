@@ -85,5 +85,39 @@ export class ProductService {
       this.logger.error('Error al eliminar el producto:', error);
       return { ok: false };
     }
+
+    
+  }
+
+  async deleteProductAdmin(id: number): Promise<{ ok: boolean }> {
+    try {
+      // Buscar el producto por ID
+      const product = await this.productRepository.findOne({ where: { id } });
+
+      if (!product) {
+        throw new NotFoundException(`Producto con ID ${id} no encontrado`);
+      }
+
+      // Eliminar la imagen asociada si existe
+      if (product.image) {
+        const imagePath = path.join(process.cwd(), 'uploads', 'products', product.image);
+        // Verificar si el archivo de la imagen existe
+        if (fs.existsSync(imagePath)) {
+          // Eliminar la imagen físicamente del servidor
+          fs.unlinkSync(imagePath);
+        } else {
+          this.logger.warn(`La imagen no existe en la ruta: ${imagePath}`);
+        }
+      }
+
+      // Eliminar el producto de la base de datos
+      await this.productRepository.remove(product);
+
+      return { ok: true };
+    } catch (error) {
+      this.logger.error('Error al eliminar el producto:', error);
+      return { ok: false };
+    }
   }
 }
+

@@ -130,12 +130,11 @@ export class ProductController {
   async getProductImage(@Param('imageName') imageName: string, @Res() res: Response) {
     const imagePath = path.join(__dirname, '..', 'uploads/products', imageName);
 
-    // Verifica si el archivo existe
     if (!fs.existsSync(imagePath)) {
       throw new HttpException('Imagen no encontrada', HttpStatus.NOT_FOUND);
     }
 
-    // Si el archivo existe, lo enviamos
+ 
     res.sendFile(imagePath);
   }
 
@@ -148,6 +147,16 @@ export class ProductController {
       return { ok: true, message: 'Product deleted successfully' };
     } else {
       throw new HttpException('Failed to delete product', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Delete('delete/:id')
+  async deleteProductAdmin(@Param('id') id: number) {
+    const result = await this.productService.deleteProductAdmin(id);
+    if (result.ok) {
+      return { ok: true, message: 'Producto eliminado correctamente' };
+    } else {
+      throw new HttpException('Error al eliminar el producto', HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 }
