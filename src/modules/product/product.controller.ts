@@ -150,7 +150,7 @@ export class ProductController {
     }
   }
 
-  @Delete('delete/:id')
+  @Delete('deleteAdmin/:id')
   async deleteProductAdmin(@Param('id') id: number) {
     const result = await this.productService.deleteProductAdmin(id);
     if (result.ok) {
